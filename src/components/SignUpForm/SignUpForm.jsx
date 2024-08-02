@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom'
 import Input from '../common/Input/Input'
 
 
-const handleClick = () => {
-    const form = document.querySelector("form")
-    form.addEventListener("submit", (e) => {
-        e.preventDefault()
-        const formData = Object.fromEntries(new FormData(form))
-        console.log(formData);
-    })
-}
-
-export default function SignUpForm() {
+    const handleClick = () => {
+        const form = document.querySelector("form")
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+            const formData = Object.fromEntries(new FormData(form))
+            console.log(formData);
+        })
+    }
     handleClick()
+export default function SignUpForm() {
+
+
     return (
         <div className="flex min-h-full h-screen flex-col justify-center align-middle px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">

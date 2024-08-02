@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom'
 
 export default function LoginForm() {
     return (
-        <div className="flex min-h-full h-screen flex-col justify-center align-middle px-6 py-12 lg:px-8">
+        <div className="flex min-h-full bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
+            <div className=' w-96 bg-gray-50 p-5 border-spacing-x-5 rounded-lg drop-shadow-lg flex flex-col '>
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Inicia sesión en tu cuenta</h2>
+
+                <div className='flex justify-center items-center p-5 pt-8 text-3xl text-indigo-700  '> <i className='bx bxl-google  duration-200 hover:scale-125'></i></div>
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -29,7 +32,7 @@ export default function LoginForm() {
                     </div>
 
                     <div>
-                        <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Ingresar</button>
+                        <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 duration-200">Ingresar</button>
                     </div>
                 </form>
 
@@ -39,6 +42,7 @@ export default function LoginForm() {
                         Registrarse
                     </Link>
                 </p>
+            </div>
             </div>
         </div>
     )

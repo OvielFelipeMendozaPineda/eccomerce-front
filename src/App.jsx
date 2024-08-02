@@ -1,5 +1,4 @@
 import React from 'react';
-import LoginForm from './components/LoginForm/LoginForm';
 import { Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage/LoginPage';
 import SignUpPage from './pages/SignUpPage/SignUpPage';

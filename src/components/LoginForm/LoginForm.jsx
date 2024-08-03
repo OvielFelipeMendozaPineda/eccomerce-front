@@ -2,25 +2,47 @@ import React, { useState } from 'react';
 import Input from '../common/Input/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Asegúrate de que la URL sea la correcta para el inicio de sesión
             const response = await axios.post('http://127.0.0.1:8080/login', {
                 username,
                 password,
             });
-            // Asegúrate de que el token se maneje correctamente
             localStorage.setItem('token', response.data.token);
+            Toast.fire({
+                icon: "success",
+                title: "Ingreso exitoso!"
+            });
             navigate('/home');
         } catch (error) {
+            Swal.fire({
+                title: 'Ingreso de sesion fallido',
+                text: 'Revisa tu correo o nombre de usuario y contraseña',
+                icon: 'error',
+                confirmButtonText: 'entendido'
+            })
+
             console.error('Error durante el inicio de sesión:', error);
+
         }
     };
 

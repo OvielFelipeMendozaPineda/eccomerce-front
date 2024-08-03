@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input/Input';
+import axios from 'axios';
+import Swal from 'sweetalert2'
+
 
 export default function SignUpForm() {
 
@@ -72,23 +75,27 @@ export default function SignUpForm() {
 
       const URL = 'http://localhost:3000/users'
       try {
-        const response = await fetch(URL, {
-          method: 'POST',
+        const response = await axios.post(URL, payload, {
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        })
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error('Error al enviar el formulario.' + error)
+          }
+        });
+        if (response.status !== 200) {
+          throw new Error('Error al enviar el formulario' + response.statusText)
         }
-        const data = await response.json()
+        const data = response.data
+        localStorage.setItem('token', data.token)
+        Swal.fire({
+          title: 'Login Successful',
+          text: 'You have successfully logged in!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        })
+        navigate('/home')
       } catch (error) {
-        console.error('Error al enviar los datos:', error);
+        console.error('Error al enviar los datos:', error.message);
+
       }
-      // aqui se realiza la autenticacion para navegar al home
-      // navigate('/home')
     }
   }
   return (

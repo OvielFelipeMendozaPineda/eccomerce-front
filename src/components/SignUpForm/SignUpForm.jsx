@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input/Input';
 import axios from 'axios';
 import Swal from 'sweetalert2'
+import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 
 
 export default function SignUpForm() {
@@ -93,6 +94,7 @@ export default function SignUpForm() {
         })
         navigate('/home')
       } catch (error) {
+        handleErrors(error)
         console.error('Error al enviar los datos:', error.message);
 
       }

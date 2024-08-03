@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
 import Swal from 'sweetalert2';
+import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
@@ -20,34 +21,36 @@ export default function LoginForm() {
         }
     });
 
+    const checkAuthorizationUrl = async () => {
+        try {
+            await axios.get('http://127.0.0.1:9000/oauth2/authorize');
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Redirigir al usuario a la URL de autorización
-            const authorizationUrl = `http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=frontend-app&redirect_uri=http://127.0.0.1:8080/authorized&scope=openid%20profile%20read`;
-            window.location.href = authorizationUrl;
-            const response = await axios.post('http://127.0.0.1:8080/login', {
+            const URL = 'http://127.0.0.1:8080/login';
+            const response = await axios.post(URL, {
                 username,
                 password,
             });
+
             localStorage.setItem('token', response.data.token);
-            Toast.fire({
-                icon: "success",
-                title: "Ingreso exitoso!"
-            });
-            navigate('/home');
+            const isUrlAvailable = await checkAuthorizationUrl();
+            if (isUrlAvailable) {
+                const authorizationUrl = `http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=frontend-app&redirect_uri=http://127.0.0.1:8080/authorized&scope=openid%20profile%20read`;
+                window.location.href = authorizationUrl;
+            }
         } catch (error) {
-            Swal.fire({
-                title: 'Ingreso de sesion fallido',
-                text: 'Revisa tu correo o nombre de usuario y contraseña',
-                icon: 'error',
-                confirmButtonText: 'entendido'
-            })
-
-            console.error('Error durante el inicio de sesión:', error);
-
+            handleErrors(error)
         }
     };
+
+
 
     return (
         <div className="flex min-h-full bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">

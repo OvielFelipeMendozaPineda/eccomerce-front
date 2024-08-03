@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Input from '../common/Input/Input';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
@@ -11,14 +11,9 @@ export default function LoginForm() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Asegúrate de que la URL sea la correcta para el inicio de sesión
-            const response = await axios.post('http://127.0.0.1:8080/login', {
-                username,
-                password,
-            });
-            // Asegúrate de que el token se maneje correctamente
-            localStorage.setItem('token', response.data.token);
-            navigate('/home');
+            // Redirigir al usuario a la URL de autorización
+            const authorizationUrl = `http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=frontend-app&redirect_uri=http://127.0.0.1:8080/authorized&scope=openid%20profile%20read`;
+            window.location.href = authorizationUrl;
         } catch (error) {
             console.error('Error durante el inicio de sesión:', error);
         }
@@ -37,7 +32,7 @@ export default function LoginForm() {
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">Nombre de usuario</label>
                             <div className="mt-2">
-                                <Input
+                                <input
                                     type="text"
                                     id="username"
                                     name="username"
@@ -51,7 +46,7 @@ export default function LoginForm() {
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Contraseña</label>
                             <div className="mt-2">
-                                <Input
+                                <input
                                     type="password"
                                     id="password"
                                     name="password"

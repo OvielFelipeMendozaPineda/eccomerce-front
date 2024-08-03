@@ -13,3 +13,18 @@ export default function Input({ text, placeholder, name, id, minLength, maxLengt
   )
 }
 
+
+Input.propTypes = {
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  minLength: PropTypes.number,
+  maxLength: PropTypes.number,
+  required: PropTypes.bool,
+  autoComplete: PropTypes.string,
+  className: PropTypes.string,
+  labelText: PropTypes.string.isRequired,
+  labelClassName: PropTypes.string,
+  onChange: PropTypes.func.isRequired
+};

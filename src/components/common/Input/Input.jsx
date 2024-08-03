@@ -1,4 +1,5 @@
 import React from 'react'
+import propTypes from 'prop-types'
 
 export default function Input({ text, placeholder, name, id, minLength, maxLength, required, autoComplete, className, labelText, LabelClassName, onChange }) {
   return (
@@ -14,17 +15,17 @@ export default function Input({ text, placeholder, name, id, minLength, maxLengt
 }
 
 
-Input.propTypes = {
-  type: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  minLength: PropTypes.number,
-  maxLength: PropTypes.number,
-  required: PropTypes.bool,
-  autoComplete: PropTypes.string,
-  className: PropTypes.string,
-  labelText: PropTypes.string.isRequired,
-  labelClassName: PropTypes.string,
-  onChange: PropTypes.func.isRequired
-};
+// Input.propTypes = {
+//   type: propTypes.string.isRequired,
+//   placeholder: propTypes.string,
+//   name: propTypes.string.isRequired,
+//   id: propTypes.string.isRequired,
+//   minLength: propTypes.number,
+//   maxLength: propTypes.number,
+//   required: propTypes.bool,
+//   autoComplete: propTypes.string,
+//   className: propTypes.string,
+//   labelText: propTypes.string.isRequired,
+//   labelClassName: propTypes.string,
+//   onChange: propTypes.func.isRequired
+// };

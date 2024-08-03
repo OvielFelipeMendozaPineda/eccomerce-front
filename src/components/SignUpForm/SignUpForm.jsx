@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Input from '../common/Input/Input';
 
 export default function SignUpForm() {
 
@@ -162,20 +163,17 @@ export default function SignUpForm() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="username" className="block text-sm font- leading-6 text-gray-900">nombre de usuario</label>
-              <div className="mt-2">
-                <input
-                  required
-                  type="username"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
+            <Input
+              required
+              type="username"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              LabelText={'Nombre de usuario'}
+              LabelClassName={"block text-sm font- leading-6 text-gray-900"}
+            />
 
             <div>
               <label htmlFor="phone" className="block text-sm font- leading-6 text-gray-900">Telefono</label>

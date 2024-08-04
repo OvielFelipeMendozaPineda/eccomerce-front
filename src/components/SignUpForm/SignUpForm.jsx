@@ -179,7 +179,7 @@ export default function SignUpForm() {
             <Input
               id="password"
               name="password"
-              type="password"
+              text="password"
               value={formData.password}
               onChange={handleChange}
               labelText="Contraseña"
@@ -190,7 +190,7 @@ export default function SignUpForm() {
             <Input
               id="confirmPassword"
               name="confirmPassword"
-              type="password"
+              text="password"
               value={formData.confirmPassword}
               onChange={handleChange}
               labelText="Confirmar contraseña"

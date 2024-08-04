@@ -21,7 +21,8 @@ export default function LoginForm() {
     const navigate = useNavigate();
     const formFields = [
         { text: 'text', id: 'username', name: 'username', autoComplete: 'username', labelText: 'Usuario o correo', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full ' },
-        { type: 'password', id: 'password', name: 'password', autoComplete: 'password', labelText: 'Contraseña', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 w-full ' }
+        { type: 'password', id: 'password', name: 'password', autoComplete: 'password', labelText: 'Contraseña', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 w-full ' },
+
     ]
     const [formData, setformData] = useState(
         formFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})

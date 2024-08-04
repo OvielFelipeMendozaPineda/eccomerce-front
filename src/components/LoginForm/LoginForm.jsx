@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import Input from '../common/Input/Input'; // Asegúrate de que la ruta sea correcta
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
-
+import Form from '../common/Form/Form';
+import { type } from '@testing-library/user-event/dist/type';
 export default function LoginForm() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+
     const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -20,6 +18,24 @@ export default function LoginForm() {
             toast.onmouseleave = Swal.resumeTimer;
         }
     });
+    const navigate = useNavigate();
+    const formFields = [
+        { text: 'text', id: 'username', name: 'username', autoComplete: 'username', labelText: 'Usuario o correo', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full ' },
+        { type: 'password', id: 'password', name: 'password', autoComplete: 'password', labelText: 'Contraseña', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 w-full ' }
+    ]
+    const [formData, setformData] = useState(
+        formFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
+    )
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setformData((prevData) => {
+            const newData = { ...prevData, [name]: value }
+            return newData
+        })
+    }
+
+    formFields.map((field) => field.onChange = handleChange)
 
     const checkAuthorizationUrl = async () => {
         try {
@@ -30,12 +46,14 @@ export default function LoginForm() {
         }
     };
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const payload = formData
         try {
             const URL = 'http://127.0.0.1:8080/login';
-            const response = await axios.post(URL, { username, password });
+            const response = await axios.post(URL, payload);
 
+            
             localStorage.setItem('token', response.data.token);
             const isUrlAvailable = await checkAuthorizationUrl();
             if (isUrlAvailable) {
@@ -48,51 +66,21 @@ export default function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-full bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
-            <div className='w-96 bg-gray-50 p-5 border-spacing-x-5 rounded-lg drop-shadow-lg flex flex-col'>
-                <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                    <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
-                    <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Inicia sesión en tu cuenta</h2>
-                    <div className='flex justify-center items-center p-5 pt-8 text-3xl text-indigo-700'>
-                        <i className='bx bxl-google duration-200 hover:scale-125'></i>
+        <div className="flex min-h-full  bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
+            <div className="drop-shadow-lg py-5 px-12 rounded-lg bg-gray-50 flex justify-center flex-col items-center">
+                <div className='sm:mx-auto sm:w-full sm:max-w-sm'> <h2 className='mt-10 text-center text-3xl font-bold leading-9 pb-5 tracking-tight text-gray-900'> Ingresa a tu cuenta </h2>
+                    <div className='flex justify-center'>
+                        <p className='text-gray-900'> Acceder con <b className='text-blue-600 cursor-pointer'>google</b></p>
                     </div>
                 </div>
-                <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form className="space-y-6" onSubmit={handleLogin}>
-                        <Input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            labelText="Usuario o correo"
-                            required
-                        />
-                        <Input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            labelText="Contraseña"
-                            required
-                        />
-                        <div>
-                            <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 duration-200">
-                                Ingresar
-                            </button>
-                        </div>
-                    </form>
-                    <p className="mt-10 text-center text-sm text-gray-500">
-                        No tienes cuenta?
-                        <Link to="/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                            Registrarse
-                        </Link>
-                    </p>
+                <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
+                <Form  formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
+                </div>
+                <div className='sm:mx-auto sm:w-full mt-5 flex justify-center items-center sm:max-w-sm'>
+                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
                 </div>
             </div>
         </div>
+
     );
 }

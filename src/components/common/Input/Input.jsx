@@ -1,8 +1,20 @@
 import React from 'react'
 import propTypes from 'prop-types'
 
-export default function Input({ text, placeholder, name, id, minLength, maxLength, required, autoComplete, className, labelText, LabelClassName, onChange }) {
-  
+export default function Input({
+  text,
+  placeholder,
+  name,
+  id,
+  minLength,
+  maxLength,
+  required,
+  autoComplete,
+  className,
+  labelText,
+  LabelClassName,
+  onChange }) {
+
   return (
     <>
       <div>

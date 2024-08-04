@@ -46,7 +46,7 @@ export default function SignUpForm() {
     event.preventDefault();
 
     if (checkPassword(formData)) {
-      return; // Detenemos el envío del formulario si las contraseñas no coinciden
+      return; 
     }
 
     const payload = {

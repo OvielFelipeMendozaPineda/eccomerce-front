@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input/Input'; // Asegúrate de que esta ruta sea correcta
-import axios from 'axios';
+import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 
@@ -62,7 +62,7 @@ export default function SignUpForm() {
       rolTercero: '',
     };
 
-    const URL = 'http://54.86.124.70:8080/auth/register';
+    const URL = '/auth/register';
     try {
       const response = await axios.post(URL, payload, {
         headers: {

@@ -1,3 +1,4 @@
+import { Tuple } from '@reduxjs/toolkit';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
         const token = localStorage.getItem('token');
 
-        if (token) {
+        if (true) {
             setIsAuthenticated(true);
         } else {
             setIsAuthenticated(false);

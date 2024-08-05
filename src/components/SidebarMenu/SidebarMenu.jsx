@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from '../common/Button/Button';
 import DefaultComponent from '../../pages/Home/DefaultComponent';
 import ProductsPage from '../../pages/ProductsPage/ProductsPage';
+import { Navigate } from 'react-router-dom';
 
 function MenuItem({ icon, itemText, arrow, isCollapsed, isSelected, onClick }) {
   return (
@@ -60,7 +61,9 @@ export default function SidebarMenu() {
       case 'home':
         return <DefaultComponent />;
       case 'products':
-        return <ProductsPage />;
+        console.log(selectedItem);
+        
+        <Navigate to={"/home/products"}/>;
       case 'customers':
         // return <CustomersPage />;
         break;
@@ -136,9 +139,7 @@ export default function SidebarMenu() {
           />
         </div>
       </div>
-      <div className="flex-1 p-4">
-        {renderContent()}
-      </div>
+
     </div>
   );
 }

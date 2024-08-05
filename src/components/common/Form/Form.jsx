@@ -6,13 +6,10 @@ import Dropdown from '../Input/Dropdown';
 
 
 export default function Form({ formFields, buttonText, handleSubmit, dropdownFields }) {
-  
-  console.log(dropdownFields);
-  
-  
+    
   return (
     <form onSubmit={handleSubmit}>
-      {formFields.map((field) => (      
+      {formFields?.map((field) => (      
         <Input
           key={field.id}
           name={field.name}
@@ -29,8 +26,8 @@ export default function Form({ formFields, buttonText, handleSubmit, dropdownFie
           onChange={field.onChange}
         />
       ))}
-      {dropdownFields.map((dropdown) => (
-        <Dropdown id={dropdown.id} labelText={dropdown.labelText} optionsFiled={dropdown.optionsFields} key={dropdown.id}/>
+      {dropdownFields?.map((dropdown) => (
+        <Dropdown id={dropdown.id} labelText={dropdown.labelText} optionsFields={dropdown.optionsFields} key={dropdown.id}/>
       ))}
       <Button
         type="submit"

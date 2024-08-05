@@ -62,7 +62,7 @@ export default function SignUpForm() {
       rolTercero: '',
     };
 
-    const URL = 'http://localhost:8080/auth/register';
+    const URL = 'http://54.86.124.70:8080/auth/register';
     try {
       const response = await axios.post(URL, payload, {
         headers: {

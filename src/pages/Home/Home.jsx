@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const Home = () => {
   return (
-    <div id='home' className='flex'>
+    <div className='flex'>
       <SidebarMenu />
       <div id='main-display' className=' flex flex-col w-full h-screen p-5 overflow-x-scroll'>
         <Outlet />

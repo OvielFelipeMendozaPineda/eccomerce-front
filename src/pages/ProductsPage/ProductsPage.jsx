@@ -27,7 +27,7 @@ export default function ProductsPage() {
     ];
 
     return (
-        <>
+        <div className='flex flex-col w-full h-screen '>
             <div className='my-5 text-3xl font-medium'><Header pageTitle={"Productos"} /></div>
             <div className='w-96 my-5'><SearchBar /></div>
             <div className='flex justify-end w-96'>
@@ -38,6 +38,6 @@ export default function ProductsPage() {
             <div className='mt-10'>
                 <Table headers={headers} data={products} />
             </div>
-        </>
+        </div>
     )
 }

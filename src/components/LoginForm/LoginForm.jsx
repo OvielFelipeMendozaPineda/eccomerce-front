@@ -40,7 +40,9 @@ export default function LoginForm() {
 
     const checkAuthorizationUrl = async () => {
         try {
-            await axios.get('http://127.0.0.1:9000/oauth2/authorize');
+            await axios.get('http://127.0.0.1:8080/auth/login');
+            console.log("Check");
+
             return true;
         } catch (error) {
             return false;
@@ -51,21 +53,22 @@ export default function LoginForm() {
         e.preventDefault();
         const payload = formData
         try {
-            const URL = 'http://127.0.0.1:8080/login';
+            const URL = 'http://127.0.0.1:8080/auth/login';
             const response = await axios.post(URL, payload);
-
-            
             localStorage.setItem('token', response.data.token);
-            const isUrlAvailable = await checkAuthorizationUrl();
-            if (isUrlAvailable) {
-                const authorizationUrl = `http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=frontend-app&redirect_uri=http://127.0.0.1:8080/authorized&scope=openid%20profile%20read`;
-                window.location.href = authorizationUrl;
+            console.log(response.data.token);
+
+            if (response.status === 200) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Inicio de sesión exitoso'
+                });
+                navigate('/home');
             }
         } catch (error) {
             handleErrors(error);
         }
     };
-
     return (
         <div className="flex min-h-full  bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
             <div className="drop-shadow-lg py-5 px-12 rounded-lg bg-gray-50 flex justify-center flex-col items-center">
@@ -75,10 +78,10 @@ export default function LoginForm() {
                     </div>
                 </div>
                 <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-                <Form  formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
+                    <Form formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
                 </div>
                 <div className='sm:mx-auto sm:w-full mt-5 flex justify-center items-center sm:max-w-sm'>
-                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
+                    <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
                 </div>
             </div>
         </div>

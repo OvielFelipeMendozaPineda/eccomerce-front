@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import Form from '../common/Form/Form';
-import { type } from '@testing-library/user-event/dist/type';
+import axios from '../../utils/axios/ConfigAxios'; // Importa tu instancia configurada de Axios
+
 export default function LoginForm() {
 
     const Toast = Swal.mixin({
@@ -18,48 +18,39 @@ export default function LoginForm() {
             toast.onmouseleave = Swal.resumeTimer;
         }
     });
+
     const navigate = useNavigate();
     const formFields = [
         { text: 'text', id: 'username', name: 'username', autoComplete: 'username', labelText: 'Usuario o correo', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full ' },
         { type: 'password', id: 'password', name: 'password', autoComplete: 'password', labelText: 'Contraseña', placeholder: '', required: 'required', className: 'rounded-lg p-1.5 w-full ' },
+    ];
 
-    ]
     const [formData, setformData] = useState(
         formFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
-    )
+    );
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setformData((prevData) => {
-            const newData = { ...prevData, [name]: value }
-            return newData
-        })
-    }
-
-    formFields.map((field) => field.onChange = handleChange)
-
-    const checkAuthorizationUrl = async () => {
-        try {
-            await axios.get('http://127.0.0.1:9000/oauth2/authorize');
-            return true;
-        } catch (error) {
-            return false;
-        }
+        setformData((prevData) => ({ ...prevData, [name]: value }));
     };
+
+    formFields.forEach((field) => field.onChange = handleChange);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const payload = formData
+        const payload = formData;
         try {
-            const URL = 'http://127.0.0.1:8080/login';
+            const URL = '/auth/login';
             const response = await axios.post(URL, payload);
-
-            
             localStorage.setItem('token', response.data.token);
-            const isUrlAvailable = await checkAuthorizationUrl();
-            if (isUrlAvailable) {
-                const authorizationUrl = `http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=frontend-app&redirect_uri=http://127.0.0.1:8080/authorized&scope=openid%20profile%20read`;
-                window.location.href = authorizationUrl;
+            console.log(response.data.token);
+
+            if (response.status === 200) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Inicio de sesión exitoso'
+                });
+                navigate('/home');
             }
         } catch (error) {
             handleErrors(error);
@@ -72,19 +63,21 @@ export default function LoginForm() {
                 <div className='w-96 mt-5'>
                     <img src="https://moufflet.co/wp-content/uploads/2020/08/logohome2.png" alt="" />
                 </div>
-                <div className='sm:mx-auto sm:w-full sm:max-w-sm'> <h2 className='mt-5  text-center text-4xl font-bold leading-9 pb-5 tracking-tight text-gray-900'>Inicio de sesion </h2>
+                <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
+                    <h2 className='mt-5  text-center text-4xl font-bold leading-9 pb-5 tracking-tight text-gray-900'>
+                       Inicio de sesion
+                    </h2>
                     <div className='flex justify-center'>
-                        <p className='text-gray-900'> Acceder con <b className='text-blue-900 cursor-pointer'>google</b></p>
+                        <p className='text-gray-900'> Acceder con <b className='text-blue-600 cursor-pointer'>google</b></p>
                     </div>
                 </div>
                 <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-                <Form  formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
+                    <Form formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
                 </div>
                 <div className='sm:mx-auto sm:w-full mt-5 flex justify-center items-center sm:max-w-sm'>
-                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-900 font-bold px-1 cursor-pointer'>Registrate</Link></p>
+                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
                 </div>
             </div>
         </div>
-
     );
 }

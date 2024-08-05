@@ -50,6 +50,7 @@ export default function SignUpForm() {
     }
 
     const payload = {
+      id: formData.id,
       primerNombre: formData.firstname,
       segundoNombre: formData.secondname,
       primerApellido: formData.lastnameFirst,
@@ -61,7 +62,7 @@ export default function SignUpForm() {
       rolTercero: '',
     };
 
-    const URL = 'http://localhost:3000/users';
+    const URL = 'http://localhost:8080/auth/register';
     try {
       const response = await axios.post(URL, payload, {
         headers: {
@@ -103,6 +104,15 @@ export default function SignUpForm() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="flex flex-row justify-evenly gap-x-5">
+              <Input
+                id="id"
+                name="id"
+                value={formData.id}
+                onChange={handleChange}
+                labelText="Número de documento"
+                required
+                className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
               <Input
                 id="firstname"
                 name="firstname"

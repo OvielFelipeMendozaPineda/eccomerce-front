@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
@@ -12,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
         const token = localStorage.getItem('token');
 
-        if (true) {
+        if (token) {
             setIsAuthenticated(true);
         } else {
             setIsAuthenticated(false);

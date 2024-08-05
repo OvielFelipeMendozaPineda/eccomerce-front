@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../common/Button/Button';
 import DefaultComponent from '../../pages/Home/DefaultComponent';
 import ProductsPage from '../../pages/ProductsPage/ProductsPage';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 function MenuItem({ icon, itemText, arrow, isCollapsed, isSelected, onClick }) {
   return (
@@ -23,6 +23,7 @@ function MenuItem({ icon, itemText, arrow, isCollapsed, isSelected, onClick }) {
         <div className='flex justify-center items-center'>
           {arrow}
         </div>
+
       )}
     </div>
   );
@@ -49,6 +50,7 @@ function Header({ imgUrl, headerTitle, isCollapsed }) {
 }
 
 export default function SidebarMenu() {
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState("home");
 
@@ -56,24 +58,16 @@ export default function SidebarMenu() {
     setIsCollapsed(prevState => !prevState);
   };
 
-  const renderContent = () => {
-    switch (selectedItem) {
-      case 'home':
-        return <DefaultComponent />;
-      case 'products':
-        console.log(selectedItem);
-        
-        <Navigate to={"/home/products"}/>;
-      case 'customers':
-        // return <CustomersPage />;
-        break;
-      case 'orders':
-        // return <OrdersPage />;
-        break;
-      default:
-        return <DefaultComponent />;
-    }
-  };
+  const handleNavigate = (item) => {
+    console.log(item);
+    
+    setSelectedItem(item)
+    const path = `/home/${item}`
+    console.log(path);
+    navigate(path)
+
+  }
+  
 
   return (
     <div className="flex">
@@ -91,16 +85,22 @@ export default function SidebarMenu() {
             isCollapsed={isCollapsed}
             isSelected={selectedItem === 'home'}
             to="/home"
-            onClick={() => setSelectedItem('home')}
+            onClick={() => {
+              handleNavigate("")
+              
+            }}
           />
           <MenuItem
             icon={<i className='bx bx-box text-white'></i>}
             itemText="Productos"
             arrow={<i className={`bx bx-chevron-right text-xl text-white ${isCollapsed ? 'hidden' : 'visible'}`}></i>}
             isCollapsed={isCollapsed}
-            isSelected={selectedItem === 'products'}
+            isSelected={selectedItem === 'productos'}
             to="/home/products"
-            onClick={() => setSelectedItem('products')}
+            onClick={() => {
+              handleNavigate('productos')
+              
+            }}
           />
           <MenuItem
             icon={<i className='bx bx-user text-white'></i>}
@@ -109,7 +109,10 @@ export default function SidebarMenu() {
             isCollapsed={isCollapsed}
             isSelected={selectedItem === 'customers'}
             to="/home/customers"
-            onClick={() => setSelectedItem('customers')}
+            onClick={() => {
+              handleNavigate('customers')
+              
+            }}
           />
           <MenuItem
             icon={<i className='bx bx-cart text-white'></i>}
@@ -118,7 +121,10 @@ export default function SidebarMenu() {
             isCollapsed={isCollapsed}
             isSelected={selectedItem === 'orders'}
             to="/home/orders"
-            onClick={() => setSelectedItem('orders')}
+            onClick={() => {
+              handleNavigate('orders')
+              
+            }}
           />
         </div>
         <div className='flex justify-between items-center self-end text-white m-5 rounded-lg p-3 font-bold'>

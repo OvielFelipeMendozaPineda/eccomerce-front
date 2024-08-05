@@ -1,4 +1,6 @@
+
 /** @type {import('tailwindcss').Config} */
+const { iconsPlugin, dynamicIconsPlugin } = require('@egoist/tailwindcss-icons')
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -12,5 +14,7 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
+    iconsPlugin(),
+    dynamicIconsPlugin()
   ],
 }

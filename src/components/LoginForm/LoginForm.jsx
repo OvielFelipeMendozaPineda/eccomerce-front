@@ -8,7 +8,7 @@ import { useAuth } from '../../utils/Authorized';
 
 export default function LoginForm() {
     const { login } = useAuth();
-    
+
     const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -46,7 +46,7 @@ export default function LoginForm() {
             const response = await axios.post(URL, payload);
 
             if (response.status === 200) {
-                login(response.data.token); // Use the login function from the context
+                login(response.data.token);
                 Toast.fire({
                     icon: 'success',
                     title: 'Inicio de sesión exitoso'

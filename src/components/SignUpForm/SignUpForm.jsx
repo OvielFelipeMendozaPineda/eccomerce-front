@@ -46,7 +46,7 @@ export default function SignUpForm() {
     event.preventDefault();
 
     if (checkPassword(formData)) {
-      return; 
+      return;
     }
 
     const payload = {
@@ -90,14 +90,14 @@ export default function SignUpForm() {
 
   return (
     <div className="flex min-h-full bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
-      <div className="drop-shadow-lg p-5 bg-gray-50 flex justify-center flex-col items-center">
+      <div className="drop-shadow-lg p-5 bg-gray-50 flex  rounded-xl justify-center flex-col items-center">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            className="mx-auto  w-72"
+            src="https://moufflet.co/wp-content/uploads/2020/08/logohome2.png"
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">Crea tu cuenta</h2>
+          <h2 className="mt-5 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">Crea tu cuenta</h2>
           <p></p>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -144,26 +144,28 @@ export default function SignUpForm() {
               />
             </div>
 
-            <Input
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              labelText="Nombre de usuario"
-              required
-              className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
+            <div className='flex flex-row justify-evenly gap-x-5'>
+              <Input
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                labelText="Nombre de usuario"
+                required
+                className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
 
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              labelText="Teléfono"
-              required
-              className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                labelText="Teléfono"
+                required
+                className="block w-full rounded-md border-0 py-1.5 p-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
 
             <Input
               id="email"
@@ -202,9 +204,9 @@ export default function SignUpForm() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-blue-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
               >
-                Ingresar
+                Registrarme
               </button>
             </div>
           </form>

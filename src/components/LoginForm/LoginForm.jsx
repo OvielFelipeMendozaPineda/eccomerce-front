@@ -67,18 +67,21 @@ export default function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-full  bg-gray-100 h-screen flex-col justify-center items-center px-6 py-12 lg:px-8">
-            <div className="drop-shadow-lg py-5 px-12 rounded-lg bg-gray-50 flex justify-center flex-col items-center">
-                <div className='sm:mx-auto sm:w-full sm:max-w-sm'> <h2 className='mt-10 text-center text-3xl font-bold leading-9 pb-5 tracking-tight text-gray-900'> Ingresa a tu cuenta </h2>
+        <div className="flex min-h-full  bg-gray-100 h-screen flex-col justify-center items-center lg:px-8">
+            <div className="drop-shadow-lg w-4xl py-8 px-10 rounded-lg bg-gray-50 flex justify-center flex-col items-center">
+                <div className='w-96 mt-5'>
+                    <img src="https://moufflet.co/wp-content/uploads/2020/08/logohome2.png" alt="" />
+                </div>
+                <div className='sm:mx-auto sm:w-full sm:max-w-sm'> <h2 className='mt-5  text-center text-4xl font-bold leading-9 pb-5 tracking-tight text-gray-900'>Inicio de sesion </h2>
                     <div className='flex justify-center'>
-                        <p className='text-gray-900'> Acceder con <b className='text-blue-600 cursor-pointer'>google</b></p>
+                        <p className='text-gray-900'> Acceder con <b className='text-blue-900 cursor-pointer'>google</b></p>
                     </div>
                 </div>
                 <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
                 <Form  formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
                 </div>
                 <div className='sm:mx-auto sm:w-full mt-5 flex justify-center items-center sm:max-w-sm'>
-                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
+                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-900 font-bold px-1 cursor-pointer'>Registrate</Link></p>
                 </div>
             </div>
         </div>

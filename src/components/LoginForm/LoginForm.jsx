@@ -8,7 +8,7 @@ import { useAuth } from '../../utils/Authorized';
 
 export default function LoginForm() {
     const { login } = useAuth();
-
+    
     const Toast = Swal.mixin({
         toast: true,
         position: "top-end",

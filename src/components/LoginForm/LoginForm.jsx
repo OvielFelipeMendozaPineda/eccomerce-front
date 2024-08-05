@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import Form from '../common/Form/Form';
-import axios from '../../utils/axios/ConfigAxios'; // Importa tu instancia configurada de Axios
+import axios from '../../utils/axios/ConfigAxios';
+import { useAuth } from '../../utils/Authorized';
 
 export default function LoginForm() {
+    const { login } = useAuth();
 
     const Toast = Swal.mixin({
         toast: true,
@@ -42,15 +44,13 @@ export default function LoginForm() {
         try {
             const URL = '/auth/login';
             const response = await axios.post(URL, payload);
-            localStorage.setItem('token', response.data.token);
-            console.log(response.data.token);
 
             if (response.status === 200) {
+                login(response.data.token); // Use the login function from the context
                 Toast.fire({
                     icon: 'success',
                     title: 'Inicio de sesión exitoso'
                 });
-                navigate('/home');
             }
         } catch (error) {
             handleErrors(error);
@@ -65,7 +65,7 @@ export default function LoginForm() {
                 </div>
                 <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
                     <h2 className='mt-5  text-center text-4xl font-bold leading-9 pb-5 tracking-tight text-gray-900'>
-                       Inicio de sesion
+                        Inicio de sesion
                     </h2>
                     <div className='flex justify-center'>
                         <p className='text-gray-900'> Acceder con <b className='text-blue-600 cursor-pointer'>google</b></p>
@@ -75,7 +75,7 @@ export default function LoginForm() {
                     <Form formFields={formFields} handleSubmit={handleSubmit} buttonText='Ingresar' />
                 </div>
                 <div className='sm:mx-auto sm:w-full mt-5 flex justify-center items-center sm:max-w-sm'>
-                     <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
+                    <p>No tienes cuenta?<Link to={"/register"} className='text-blue-600 font-bold px-1 cursor-pointer'>Registrate</Link></p>
                 </div>
             </div>
         </div>

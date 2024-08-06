@@ -10,8 +10,6 @@ import { productInput, dropdownInput } from '../../utils/inputs/product/product'
 import { render } from '@testing-library/react';
 
 
-console.log(dropdownInput);
-
 export default function ProductsPage() {
     const products = [
         { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active'},

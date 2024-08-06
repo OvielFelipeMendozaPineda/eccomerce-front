@@ -11,7 +11,7 @@ const DefaultComponent = () => {
         const response = await axios.get('/api/v1/getCliente');
         setData(response.data);
       } catch (error) {
-        console.log(error);
+        console.warn(error);
       }
     }
     fetchData();

@@ -24,7 +24,6 @@ const proveedoresJSON = async () => {
     }
 
 }
-console.log(proveedoresJSON);
 
 
 
@@ -56,3 +55,10 @@ export const dropdownInput = [
 
 
 
+export const registerClienteFields = [
+    { text: 'Documento', id: 'documento', name: 'documento', autoComplete: 'documento', labelText: 'Documento', placeholder: 'Ingrese el documento', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 20 },
+    { text: 'Nombre', id: 'name', name: 'name', autoComplete: 'name', labelText: 'Nombre completo', placeholder: 'Ingrese el nombre', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 50 },
+    { text: 'Apellido', id: 'apellido', name: 'apellido', autoComplete: 'apellido', labelText: 'Apellido', placeholder: 'Ingrese el apellido', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 50 },
+    { text: 'Correo', id: 'correo', name: 'correo', autoComplete: 'email', labelText: 'Correo electrónico', placeholder: 'Ingrese el correo electrónico', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 100 },
+    { text: 'Celular', id: 'celular', name: 'celular', autoComplete: 'tel', labelText: 'Número de celular', placeholder: 'Ingrese el número de celular', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 15 }
+];

@@ -12,7 +12,8 @@ module.exports = {
         'primary-blue' :'#001C41',
         'secundary-golden' : '#D8B46A',
         'primary-gray' : 'rgb(34, 34, 34)',
-        'secundary-gray' : '#666666'
+        'secundary-gray' : '#666666',
+        'background-gray' : "#F2F2F2"
       },
       fontFamily: {
         'header' : ['Montserrat','Helvetica','Arial','Lucida','sans-serif']

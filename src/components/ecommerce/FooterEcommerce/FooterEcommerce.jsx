@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function FooterEcommerce() {
   return (
-    <footer className="bg-white">
+    <footer className="bg-background-gray">
   <div className="mx-auto max-w-screen-xl px-4 pb-8 pt-16 sm:px-6 lg:px-8 lg:pt-24">
 
     <div

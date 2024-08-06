@@ -48,10 +48,10 @@ export default function ProductsPage() {
                     </div>
                 </div>
                 <div className='mt-10'>
-                    <Table headers={headers} data={products} /> :
+                    <Table headers={headers} notShow={true} data={products} /> :
                 </div>
             </div>
-            <Modal modalTitle="Crear producto" fields={productInput} dropdownFields={dropdownInput} show={showModal} handleModal={handleModal} />
+            <Modal modalTitle="Crear producto"  fields={productInput} dropdownFields={dropdownInput} show={showModal} handleModal={handleModal} />
         </>
     )
 }

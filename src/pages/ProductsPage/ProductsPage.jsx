@@ -15,6 +15,7 @@ export default function ProductsPage() {
     const products = [
         { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active', actions: 'Edit' },
         { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active', actions: 'Edit' },
+
     ];
     const headers = [
         { title: 'Product', key: 'name', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-176 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal' },
@@ -44,7 +45,7 @@ export default function ProductsPage() {
         }
     }
 
-    
+
     return (
         <>
             <div className='flex flex-col w-full h-screen '>
@@ -56,10 +57,10 @@ export default function ProductsPage() {
                     </div>
                 </div>
                 <div className='mt-10'>
-                    <Table headers={headers} data={products} />
+                    <Table headers={headers} data={products} /> :
                 </div>
             </div>
             <Modal modalTitle="Crear producto" fields={productInput} dropdownFields={dropdownInput} show={showModal} handleModal={handleModal} />
-            </>
+        </>
     )
 }

@@ -28,7 +28,7 @@ const Table = ({ data, headers }) => (
             <tr>
               <td colSpan={headers.length} className="p-5">
                 <div className="bg-gray-200 p-5 flex justify-center items-center w-full h-20 rounded-md shadow-md">
-                  <h2 className="text-gray-700 font-semibold">No hay productos</h2>
+                  <h2 className="text-gray-700 font-semibold">No hay registros</h2>
                 </div>
               </td>
             </tr>

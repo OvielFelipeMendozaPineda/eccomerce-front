@@ -10,7 +10,7 @@ import axios from 'axios'
 
 const getClientesByCity = async (city) => {
     try {
-        const response = await axios.get("/ciudades/getAll")
+        const response = await axios.get(`ciudades/getAllClientesByCity?city=${city}`)
         if (response.data) {
             return response.data
         } else {
@@ -20,6 +20,21 @@ const getClientesByCity = async (city) => {
         return []
     }
 }
+
+const getAllClientes = async () => {
+    try {
+        const response = await axios.get(`ciudades/getAllClientes`)
+        if (response.data) {
+            return response.data
+        } else {
+            return []
+        }
+    } catch (error) {
+        return []
+    }
+}
+
+const defaultClientes = await getAllClientes()
 
 const defaultHeader = [
     {title: 'Documento', className: 'text-gray-500'},
@@ -38,33 +53,57 @@ const SortByCityHeader = [
 export default function CustomerPage() {
 
     const [city, setCity] = useState("")
-    const [clientes, setClientes] = useState([])
+    const [clientes, setClientes] = useState(defaultClientes)
     const [headers, setHeaders] = useState(defaultHeader)
 
 
     useEffect(() => {
         const fetchClientes = async () => {
-            if (city) {
-                const data = await getClientesByCity(city)
+                const data = await getAllClientes()
                 setClientes(data)
-                setHeaders(SortByCityHeader)
-                
-            }
         }
         fetchClientes()
 
-    }, [city])
+    }, [])
 
     const handleClick = (e) => {
         const cityInput = document.querySelector('#city-input')
         setCity(cityInput.value)
+
     }
+
+    const handleCitySearch = async (e) => {
+        if (city) {
+            const data = await getClientesByCity(city)
+            setClientes(data)
+            setHeaders(SortByCityHeader)
+        }
+    }
+    useEffect(() => {
+        handleCitySearch()
+    }, [city])
+    
     const handleReset = () => {
         // AQUI VA TODO EL ESTADO INICIAL   
         setHeaders(defaultHeader)
         setCity(null)
+        setClientes(defaultClientes)
+        
     }
 
+
+    const allClientes = async () => {
+        try {
+            const response = await axios.get("clientes/getAll")
+            if (response.data) {
+                return response.data
+            } else {
+                return []
+            }
+        } catch (error) {
+            return []
+        }
+    }
     return (
         <div className='flex flex-col w-full h-screen '>
             <div className='my-5 text-3xl font-medium'><Header pageTitle={"Gestion de clientes"} /></div>

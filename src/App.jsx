@@ -8,12 +8,14 @@ import ProductsPage from './pages/ProductsPage/ProductsPage';
 import { AuthProvider } from './utils/Authorized';
 import RutaPrivada from './utils/RutaPrivada';
 import DefaultComponent from './pages/Home/DefaultComponent';
+import Ecommerce from './components/ecommerce/Ecommerce';
 
 const App = () => (
     <div className="App h-screen">
         <AuthProvider>
             <Routes>
                 <Route path='/login' element={<LoginPage />} />
+                <Route path='/landing' element={<Ecommerce/>}></Route>
                 <Route path='/register' element={<SignUpPage />} />
                 <Route path='/home' element={<RutaPrivada />}>
                     <Route path='' element={<Home />}>

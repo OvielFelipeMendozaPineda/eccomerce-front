@@ -14,23 +14,14 @@ console.log(dropdownInput);
 
 export default function ProductsPage() {
     const products = [
-        { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active', actions: 'Edit' },
-        { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active', actions: 'Edit' },
+        { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active'},
+        { imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active' },
 
     ];
     const headers = [
         { title: 'Product', key: 'name', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-176 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal' },
         { title: 'Price', key: 'price', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-296 px-4 py-3 text-left text-[#4f7296] w-[400px] text-sm font-medium leading-normal' },
-        { title: 'Inventory', key: 'inventory', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-416 px-4 py-3 text-left text-[#4f7296] w-[400px] text-sm font-medium leading-normal' },
-        {
-            title: 'Status', key: 'status', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-536 px-4 py-3 text-left text-[#0e141b] w-60 text-sm font-medium leading-normal', render: row => (
-                <button
-                    className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e8edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                >
-                    <span className="truncate">{row.status}</span>
-                </button>
-            )
-        }
+        { title: 'Inventory', key: 'inventory', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-416 px-4 py-3 text-left text-[#4f7296] w-[400px] text-sm font-medium leading-normal' }
     ];
     const [showModal, setshowModal] = useState(false)
     const handleModal = (e) => {

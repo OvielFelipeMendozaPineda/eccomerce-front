@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toggle } from '../Toggle/Toggle';
 
 const Table = ({ data, headers }) => (
   <div className="px-4 py-3">
@@ -11,6 +12,12 @@ const Table = ({ data, headers }) => (
                 {header.title}
               </th>
             ))}
+            <th className='table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-176 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal'>
+              Status
+            </th>
+            <th className='table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-176  py-3 text-center text-[#0e141b] text-sm font-medium'>
+              Editar
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -22,6 +29,14 @@ const Table = ({ data, headers }) => (
                     {header.render ? header.render(row) : row[header.key]}
                   </td>
                 ))}
+                <td>
+                  <Toggle
+                    checked={row.status === 'Active'}
+                    onChange={() => {
+                      // Lógica para manejar el cambio de estado
+                    }}
+                  />
+                </td>
                 <td >
                 <div className="inline-flex rounded-lg border border-gray-100 bg-gray-100 p-1">
                     <button

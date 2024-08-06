@@ -5,23 +5,10 @@ import { useState } from 'react';
 
 const DefaultComponent = () => {
   const [data, setData] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/v1/getCliente');
-        setData(response.data);
-      } catch (error) {
-        console.warn(error);
-      }
-    }
-    fetchData();
-  }, [])
-
-  return (
+    return (
     <div>
       <h1>Bienvenido al Dashboard</h1>
       <p>Este es el contenido por defecto.</p>
-      <p>{data ? JSON.stringify(data) : "No hay nada"}</p>
     </div>
   );
 }

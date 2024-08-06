@@ -26,7 +26,7 @@ const Toast = Swal.mixin({
 
 const getClientesByCity = async (city) => {
     try {
-        const response = await axios.get(`clientes/getAllClientesByCity?city=${city}`);
+        const response = await axios.get(`/admin/clientes/getAllClientesByCity?city=${city}`);
         return response.data || [];
     } catch (error) {
         console.error('Error fetching clients by city:', error);
@@ -37,7 +37,7 @@ const getClientesByCity = async (city) => {
 
 const getAllClientes = async () => {
     try {
-        const response = await axios.get(`clientes/getAllClientes`);
+        const response = await axios.get(`/admin/clientes/getAll`);
         return response.data || [];
     } catch (error) {
         console.error('Error fetching all clients:', error);
@@ -56,6 +56,7 @@ export default function CustomerPage() {
         const fetchClientes = async () => {
             const data = await getAllClientes();
             setClientes(data);
+            
             if (data.length > 0) {
                 const dynamicHeaders = Object.keys(data[0]).map(key => ({
                     key,
@@ -68,7 +69,6 @@ export default function CustomerPage() {
         fetchClientes();
     }, []);
 
-    // Maneja la búsqueda de clientes por ciudad
     useEffect(() => {
         const handleCitySearch = async () => {
             if (city) {
@@ -159,12 +159,12 @@ export default function CustomerPage() {
             <div className="my-5 text-3xl font-medium">
                 <Header pageTitle="Gestion de clientes" />
             </div>
-            <Button id="create-customer-btn" children="Registrar nuevo cliente" type="button" className="bg-gray-200 rounded-md w-60 px-5 py-3 hover:bg-green-500 font-bold hover:text-white" onClick={handleModal} />
+            <Button id="create-customer-btn" children="Registrar nuevo cliente" type="button" className= "bg-gray-200 rounded-md w-60 px-5 py-3 my-5  duration-300 hover:bg-green-500 font-medium hover:text-white hover:scale-105" onClick={handleModal} />
             <div className="flex justify-around items-center">
-                <label htmlFor="city-input">Buscar clientes por ciudad</label>
-                <input id="city-input" type="search" name="city-input" placeholder="Ingresa una ciudad" />
-                <button type="button" className="bg-gray-200 p-3" onClick={handleClick}>Buscar</button>
-                <button type="button" className="bg-gray-200 p-3" onClick={handleReset}>Limpiar</button>
+                <label className=' font-semibold' htmlFor="city-input">Buscar clientes por ciudad</label>
+                <input id="city-input"className=' rounded-lg border-none ' type="search" name="city-input" placeholder="Ingresa una ciudad" />
+                <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-blue-600 hover:text-white" onClick={handleClick}>Buscar</button>
+                <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-red-600 hover:text-white" onClick={handleReset}>Limpiar</button>
             </div>
             <div className="table-view bg-gray-200 w-full h-full mt-5">
                 <Table data={clientes} headers={headers} notShow={false} />

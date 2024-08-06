@@ -11,7 +11,7 @@ export const productInput = [
 
 const proveedoresJSON = async () => {
     try {
-        const response = await axios.get("prooveder/getAll")
+        const response = await axios.get("/admin/proveedores/getAll")
         if (response.data) {
             return response.data
         } else {
@@ -29,10 +29,10 @@ const proveedoresJSON = async () => {
 
 const gamasJSON = async () => {
     try {
-        const response = await axios.get("gama/getAll")
+        const response = await axios.get("/admin/gama/getAll")
         if (response.data) {
             return response.data
-        } else {          
+        } else {
             return []
         }
     } catch (error) {
@@ -43,7 +43,7 @@ const gamasJSON = async () => {
 
 }
 
- 
+
 export const dropdownInput = [
     {
         name: "provider", id: "provider", labelText: "Escojer proveedor", optionsFields: await proveedoresJSON()

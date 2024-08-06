@@ -9,11 +9,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.3",
-<<<<<<< HEAD
     "eccomerce-front": "file:",
-=======
     "boxicons": "^2.1.4",
->>>>>>> cec2f2792cca8bf60b36d2522efabf3e88f3dd2f
     "json-server": "^1.0.0-beta.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

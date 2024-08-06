@@ -66,7 +66,7 @@ export default function SidebarMenu() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [selectedItem, setSelectedItem] = useState();
+  const [selectedItem, setSelectedItem] = useState('home');
 
   const toggleCollapse = () => {
     setIsCollapsed(prevState => !prevState);
@@ -82,10 +82,8 @@ export default function SidebarMenu() {
   }
   const handleNavigate = (item) => {
     setSelectedItem(item)
-    if (selectedItem == 'home') {
-      const path = `/home`
-    }
-    const path = `/home/${item}`
+    let path = ''
+    item == 'home' ? path = `/home`: path = `/home/${item}` ;
     console.log(path);
     navigate(path)
 

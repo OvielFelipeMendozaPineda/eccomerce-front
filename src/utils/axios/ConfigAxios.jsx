@@ -9,8 +9,6 @@ instance.interceptors.request.use((config) => {
   console.log(token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-
-
   }
   return config;
 }, (error) => {

@@ -3,6 +3,8 @@ import Button from '../common/Button/Button';
 import DefaultComponent from '../../pages/Home/DefaultComponent';
 import ProductsPage from '../../pages/ProductsPage/ProductsPage';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../utils/Authorized';
+import Swal from 'sweetalert2';
 
 function MenuItem({ icon, itemText, arrow, isCollapsed, isSelected, onClick }) {
   return (
@@ -50,6 +52,18 @@ function Header({ imgUrl, headerTitle, isCollapsed }) {
 }
 
 export default function SidebarMenu() {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState("home");
@@ -58,16 +72,24 @@ export default function SidebarMenu() {
     setIsCollapsed(prevState => !prevState);
   };
 
+  const handleLogout = () => {
+    Toast.fire({
+      icon: 'success',
+      title: 'Sesion cerrada.'
+  });
+    logout()
+
+  }
   const handleNavigate = (item) => {
     console.log(item);
-    
+
     setSelectedItem(item)
     const path = `/home/${item}`
     console.log(path);
     navigate(path)
 
   }
-  
+
 
   return (
     <div className="flex">
@@ -87,7 +109,7 @@ export default function SidebarMenu() {
             to="/home"
             onClick={() => {
               handleNavigate("")
-              
+
             }}
           />
           <MenuItem
@@ -99,7 +121,7 @@ export default function SidebarMenu() {
             to="/home/products"
             onClick={() => {
               handleNavigate('productos')
-              
+
             }}
           />
           <MenuItem
@@ -111,7 +133,7 @@ export default function SidebarMenu() {
             to="/home/customers"
             onClick={() => {
               handleNavigate('customers')
-              
+
             }}
           />
           <MenuItem
@@ -123,7 +145,7 @@ export default function SidebarMenu() {
             to="/home/orders"
             onClick={() => {
               handleNavigate('orders')
-              
+
             }}
           />
         </div>
@@ -134,6 +156,7 @@ export default function SidebarMenu() {
               type='button'
               className='hover:bg-blue-900 px-5 py-2 rounded-xl'
               children='Cerrar sesión'
+              onClick={handleLogout}
             />
           )}
           <Button

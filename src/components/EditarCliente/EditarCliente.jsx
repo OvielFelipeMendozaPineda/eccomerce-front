@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
 import Button from '../common/Button/Button'
 import { useState } from 'react'
+import axios from 'axios'
+import Swal from 'sweetalert2'
 
 
-export default function EditarCliente({ customer, show = true, }) {
+export default function EditarCliente({ customer, show = false, }) {
   const [isVisible, setIsVisible] = useState(show)
   const [formData, setformData] = useState(customer)
 
@@ -14,6 +16,17 @@ export default function EditarCliente({ customer, show = true, }) {
   if (!isVisible) {
     return null
   }
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});   
   const handleClick = () => {
     setIsVisible(false)
   }
@@ -23,9 +36,19 @@ export default function EditarCliente({ customer, show = true, }) {
     setformData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
       const payload = formData
-      console.log(payload);
+      try {
+        const URL = 'admin/cliente/put'
+        const response = await axios.post(URL, payload)
+        if (response ==  200) {
+          Swal.fire(
+            
+          )
+        }
+      } catch (error) {
+        
+      }
       
   }
   return (

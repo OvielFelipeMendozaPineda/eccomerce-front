@@ -5,7 +5,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 
-export default function EditarCliente({ customer, show = false, }) {
+export default function EditarCliente({ customer, show, handleModal }) {
   const [isVisible, setIsVisible] = useState(show)
   const [formData, setformData] = useState(customer)
 
@@ -29,6 +29,7 @@ export default function EditarCliente({ customer, show = false, }) {
 });   
   const handleClick = () => {
     setIsVisible(false)
+    handleModal(false)
   }
 
   const handleChange = (e) => {

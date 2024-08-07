@@ -47,11 +47,11 @@ const getAllClientes = async () => {
 };
 
 export default function CustomerPage() {
-    const { login } = useAuth();
     const [city, setCity] = useState('');
     const [clientes, setClientes] = useState([]);
     const [headers, setHeaders] = useState([]);
     const navigate = useNavigate();
+    const [showAble, setshowAble] = useState(false)
 
     useEffect(() => {
         const fetchClientes = async () => {
@@ -155,11 +155,14 @@ export default function CustomerPage() {
         }
     };
 
+    const HandleEditClienteModal = (booleano) => {
+        setshowAble(booleano)
+    }
+
     const editButtonList = document?.querySelectorAll('#edit-btn')
     editButtonList.forEach((btn) => {
         btn.addEventListener('click', (e) => {
-            console.log(click);
-            
+            HandleEditClienteModal(true)
             
         })
     })
@@ -191,7 +194,7 @@ export default function CustomerPage() {
                 <Table data={clientes} headers={headers} notShow={false} />
             </div>
             <Modal modalTitle="Registrar Cliente" handleSubmit={handleSubmit} fields={registerClienteFields} dropdownFields={[]} show={showModal} handleModal={handleModal} />
-            <EditarCliente customer={customer} handleClick={''} />
+            <EditarCliente customer={customer} handleClick={''} handleModal={HandleEditClienteModal} show={showAble} />
         </div>
     );
 }

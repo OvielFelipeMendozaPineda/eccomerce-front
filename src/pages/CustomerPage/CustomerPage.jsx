@@ -7,9 +7,7 @@ import Modal from '../../components/Modal/Modal';
 import { registerClienteFields } from '../../utils/inputs/product/product';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import axios from '../../utils/axios/ConfigAxios';
-import { useAuth } from '../../utils/Authorized';
 import Swal from 'sweetalert2';
-import { click } from '@testing-library/user-event/dist/click';
 import EditarCliente from '../../components/EditarCliente/EditarCliente';
 
 
@@ -50,8 +48,9 @@ export default function CustomerPage() {
     const [city, setCity] = useState('');
     const [clientes, setClientes] = useState([]);
     const [headers, setHeaders] = useState([]);
-    const navigate = useNavigate();
     const [showAble, setshowAble] = useState(false)
+    const [clienteIndex, setClienteIndex] = useState(null)
+    const [showModal, setshowModal] = useState(false)
 
     useEffect(() => {
         const fetchClientes = async () => {
@@ -98,6 +97,9 @@ export default function CustomerPage() {
 
     // Resetea el estado al valor inicial
     const handleReset = () => {
+        setshowModal(false)
+        setshowAble(false)
+        setClienteIndex(null)
         setCity('');
         (async () => {
             const data = await getAllClientes();
@@ -113,7 +115,7 @@ export default function CustomerPage() {
         })();
     };
 
-    const [showModal, setshowModal] = useState(false)
+
     const handleModal = (e) => {
         if (!showModal) {
             console.log("true");
@@ -163,13 +165,23 @@ export default function CustomerPage() {
         setshowAble(booleano)
     }
 
-    const editButtonList = document?.querySelectorAll('#edit-btn')
-    editButtonList.forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-            HandleEditClienteModal(true)
-            
-        })
-    })
+    useEffect(() => {
+        const editButtonList = document?.querySelectorAll('.edit-btn')
+        editButtonList.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                setClienteIndex(btn.id)
+                HandleEditClienteModal(true)
+
+
+            })
+        });
+        
+    }, [clientes])
+
+
+
+
+
 
     const customer = {
         name: 'John Doe',
@@ -190,7 +202,7 @@ export default function CustomerPage() {
                     </div>
                     <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-blue-600 hover:text-white" onClick={handleClick}>Buscar</button>
                     <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-red-600 hover:text-white" onClick={handleReset}>Limpiar</button>
-                    <Button id="create-customer-btn" children="Registrar nuevo cliente" type="button" className="bg-gray-200 rounded-md w-60 px-5 py-3 my-5  duration-300 hover:bg-green-500 font-medium hover:text-white hover:scale-105" onClick={handleModal} />
+
                 </div>
 
             </div>
@@ -198,7 +210,7 @@ export default function CustomerPage() {
                 <Table data={clientes} headers={headers} notShow={false} />
             </div>
             <Modal modalTitle="Registrar Cliente" handleSubmit={handleSubmit} fields={registerClienteFields} dropdownFields={[]} show={showModal} handleModal={handleModal} />
-            <EditarCliente customer={customer} handleClick={''} handleModal={HandleEditClienteModal} show={showAble} />
+            <EditarCliente customer={clientes[clienteIndex]} handleClick={''} handleModal={HandleEditClienteModal} show={showAble} />
         </div>
     );
 }

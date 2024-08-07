@@ -138,14 +138,18 @@ export default function CustomerPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        formData.username = formData.primerNombre + formData.id.slice(-1, 4);
+        console.log(formData);
+
         const payload = formData;
         try {
-            const URL = '/auth/register';
+            const URL = '/admin/cliente/newCliente';
             const response = await axios.post(URL, payload);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 Toast.fire({
                     icon: 'success',
-                    title: 'Cliente registrado exitosamente!'
+                    title: 'Cliente registrado exitosamente!',
+                    confirmButtonText: 'OK',
                 });
             }
         } catch (error) {
@@ -171,7 +175,7 @@ export default function CustomerPage() {
         name: 'John Doe',
         age: 30,
         profession: 'Developer'
-      };
+    };
     return (
         <div className="flex flex-col w-full h-screen">
             <div className="my-5 text-3xl font-medium">

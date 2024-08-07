@@ -9,7 +9,8 @@ import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import axios from '../../utils/axios/ConfigAxios';
 import { useAuth } from '../../utils/Authorized';
 import Swal from 'sweetalert2';
-
+import { click } from '@testing-library/user-event/dist/click';
+import EditarCliente from '../../components/EditarCliente/EditarCliente';
 
 
 const Toast = Swal.mixin({
@@ -151,6 +152,20 @@ export default function CustomerPage() {
         }
     };
 
+    const editButtonList = document?.querySelectorAll('#edit-btn')
+    editButtonList.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            console.log(click);
+            
+            
+        })
+    })
+
+    const customer = {
+        name: 'John Doe',
+        age: 30,
+        profession: 'Developer'
+      };
     return (
         <div className="flex flex-col w-full h-screen">
             <div className="my-5 text-3xl font-medium">
@@ -161,7 +176,7 @@ export default function CustomerPage() {
                 <div className='flex flex-row gap-2  px-5 py-3 justify-center items-center'>
                     <div className='bg-gray-200 pl-4 gap-2 py-1 rounded-lg flex items-center'>
                         <box-icon name='search-alt'></box-icon>
-                        <input id="city-input" className=' rounded-lg border-none  focus:ring-0 ring-0 bg-gray-200 ' type="search" name="city-input" placeholder="Ingresa una ciudad" />
+                        <input id="city-input" className=' rounded-lg border-none  focus:invalid:ring-pink-500 focus:ring-0 ring-0 bg-gray-200 ' type="search" name="city-input" placeholder="Ingresa una ciudad" />
                     </div>
                     <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-blue-600 hover:text-white" onClick={handleClick}>Buscar</button>
                     <button type="button" className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-red-600 hover:text-white" onClick={handleReset}>Limpiar</button>
@@ -173,6 +188,7 @@ export default function CustomerPage() {
                 <Table data={clientes} headers={headers} notShow={false} />
             </div>
             <Modal modalTitle="Registrar Cliente" handleSubmit={handleSubmit} fields={registerClienteFields} dropdownFields={[]} show={showModal} handleModal={handleModal} />
+            <EditarCliente customer={customer} handleClick={''} />
         </div>
     );
 }

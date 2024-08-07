@@ -60,10 +60,12 @@ export default function CustomerPage() {
 
             if (data.length > 0) {
                 const dynamicHeaders = Object.keys(data[0]).map(key => ({
+
                     key,
                     title: key.charAt(0).toUpperCase() + key.slice(1),
                     className: 'text-gray-500'
                 }));
+
                 setHeaders(dynamicHeaders);
             }
         };
@@ -138,9 +140,8 @@ export default function CustomerPage() {
         e.preventDefault();
         const payload = formData;
         try {
-            const URL = '/admin/cliente/newCliente';
+            const URL = '/auth/register';
             const response = await axios.post(URL, payload);
-
             if (response.status === 200) {
                 Toast.fire({
                     icon: 'success',
@@ -148,6 +149,8 @@ export default function CustomerPage() {
                 });
             }
         } catch (error) {
+            console.log("Hola");
+
             handleErrors(error);
         }
     };
@@ -171,7 +174,7 @@ export default function CustomerPage() {
             <div className="my-5 text-3xl font-medium">
                 <Header pageTitle="Gestion de clientes" />
             </div>
-            
+            <Button id="create-customer-btn" children="Registrar nuevo cliente" type="button" className="bg-gray-200 rounded-md w-60 px-5 py-3 my-5  duration-300 hover:bg-green-500 font-medium hover:text-white hover:scale-105" onClick={handleModal} />
             <div className="flex justify-around items-center">
                 <div className='flex flex-row gap-2  px-5 py-3 justify-center items-center'>
                     <div className='bg-gray-200 pl-4 gap-2 py-1 rounded-lg flex items-center'>

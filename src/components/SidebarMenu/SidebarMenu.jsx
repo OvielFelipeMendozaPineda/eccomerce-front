@@ -66,7 +66,7 @@ export default function SidebarMenu() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("home");
+  const [selectedItem, setSelectedItem] = useState('home');
 
   const toggleCollapse = () => {
     setIsCollapsed(prevState => !prevState);
@@ -76,15 +76,14 @@ export default function SidebarMenu() {
     Toast.fire({
       icon: 'success',
       title: 'Sesion cerrada.'
-  });
+    });
     logout()
 
   }
   const handleNavigate = (item) => {
-    console.log(item);
-
     setSelectedItem(item)
-    const path = `/home/${item}`
+    let path = ''
+    item == 'home' ? path = `/home`: path = `/home/${item}` ;
     console.log(path);
     navigate(path)
 
@@ -93,7 +92,7 @@ export default function SidebarMenu() {
 
   return (
     <div className="flex">
-      <div className={`grid grid-rows-3 ${isCollapsed ? 'w-32' : 'w-96'} h-screen bg-blue-950 transition-all duration-100 ease-in-out`}>
+      <div className={`grid grid-rows-3 ${isCollapsed ? 'w-24' : 'w-96'} h-screen bg-blue-950 transition-all duration-100 ease-in-out`}>
         <Header
           imgUrl="https://moufflet.co/wp-content/uploads/2020/08/logohome2.png"
           headerTitle="Mofflet"
@@ -108,7 +107,7 @@ export default function SidebarMenu() {
             isSelected={selectedItem === 'home'}
             to="/home"
             onClick={() => {
-              handleNavigate("")
+              handleNavigate('home')
 
             }}
           />

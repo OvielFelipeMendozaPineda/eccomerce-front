@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from '../../../utils/axios/ConfigAxios';
 import Dropdown from "../../../components/common/Input/Dropdown"
 
 export const productInput = [
@@ -11,7 +11,7 @@ export const productInput = [
 
 const proveedoresJSON = async () => {
     try {
-        const response = await axios.get("prooveder/getAll")
+        const response = await axios.get("/admin/proveedor/getAll")
         if (response.data) {
             return response.data
         } else {
@@ -24,16 +24,15 @@ const proveedoresJSON = async () => {
     }
 
 }
-console.log(proveedoresJSON);
 
 
 
 const gamasJSON = async () => {
     try {
-        const response = await axios.get("gama/getAll")
+        const response = await axios.get("/admin/gama/getAll")
         if (response.data) {
             return response.data
-        } else {          
+        } else {
             return []
         }
     } catch (error) {
@@ -44,7 +43,7 @@ const gamasJSON = async () => {
 
 }
 
- 
+
 export const dropdownInput = [
     {
         name: "provider", id: "provider", labelText: "Escojer proveedor", optionsFields: await proveedoresJSON()
@@ -56,3 +55,10 @@ export const dropdownInput = [
 
 
 
+export const registerClienteFields = [
+    { text: 'text', id: 'id', name: 'id', autoComplete: 'documento', labelText: 'Documento', placeholder: 'Ingrese el documento', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 20 },
+    { text: 'text', id: 'primerNombre', name: 'primerNombre', autoComplete: 'name', labelText: 'Nombre completo', placeholder: 'Ingrese el nombre', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 50 },
+    { text: 'text', id: 'primerApellido', name: 'primerApellido', autoComplete: 'apellido', labelText: 'Apellido', placeholder: 'Ingrese el apellido', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 50 },
+    { text: 'text', id: 'email', name: 'email', autoComplete: 'email', labelText: 'Correo electrónico', placeholder: 'Ingrese el correo electrónico', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 100 },
+    { text: 'text', id: 'telefono', name: 'telefono', autoComplete: 'tel', labelText: 'Número de celular', placeholder: 'Ingrese el número de celular', required: 'required', className: 'rounded-lg p-1.5 mb-3 w-full', maxLength: 15 }
+];

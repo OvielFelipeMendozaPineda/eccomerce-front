@@ -3,10 +3,10 @@ import Table from '../../components/common/Table/Table';
 import Header from '../../components/common/Header/Header';
 import SearchBar from '../../components/common/SearchBar/SearchBar';
 import Button from '../../components/common/Button/Button';
-import Modal from '../../components/Modal/Modal';
 import { productInput, dropdownInput } from '../../utils/inputs/product/product';
 import { EditProductModal, ViewProductModal, ConfirmDeleteModal } from '../../components/common/ModalsProduct/ModalsProduct';
 import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
+import ModalNewProduct from './ModalNewProduct';
 
 export default function ProductsPage() {
   const products = [
@@ -52,7 +52,6 @@ export default function ProductsPage() {
   };
 
   const handleDeleteConfirm = () => {
-    // Lógica para eliminar el producto
     setConfirmDeleteVisible(false);
     console.log('Product deleted:', selectedProduct);
   };
@@ -78,7 +77,7 @@ export default function ProductsPage() {
           />
         </div>
       </div>
-      <Modal modalTitle="Crear producto" fields={productInput} dropdownFields={dropdownInput} show={showModal} handleModal={handleModal} />
+      <ModalNewProduct show={showModal} handleModal={handleModal} />
       <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
       <ViewProductModal product={selectedProduct} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <ConfirmDeleteModal show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />

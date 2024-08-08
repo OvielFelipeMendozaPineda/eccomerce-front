@@ -3,6 +3,8 @@ import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import Table from '../../components/common/Table/Table';
+import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
+import Button from '../../components/common/Button/Button';
 
 export const Toast = Swal.mixin({
   toast: true,
@@ -18,6 +20,7 @@ export const Toast = Swal.mixin({
 
 const mockPedido = [
   {
+    id: 1,
     fechaPedido: '2024-10-01',
     fechaEsperada: '2024-12-01',
     fechaEntrega: null,
@@ -41,15 +44,9 @@ const getAllPedidos = async () => {
   try {
     const url = '/admin/pedido/getAll';
     const response = await axios.get(url);
-
-    if (response.data.length === 0 || response.data === undefined) {
-      return mockPedido
-    }
-    console.log(response.data);
-
-    return response.data;
+    return response.data || [];
   } catch (error) {
-    return mockPedido
+    return []
   }
 };
 
@@ -109,7 +106,6 @@ export default function PedidosPage() {
             title: key.charAt(0).toUpperCase() + key.slice(1),
             className: 'text-gray-500'
           }));
-          console.log(dynamicHeaders);
           setHeaders(dynamicHeaders);
         }
       } catch (error) {
@@ -199,30 +195,43 @@ export default function PedidosPage() {
     }
   };
 
-  const handleEditClick = (customer) => {
-    setselectedOrder(customer);
+  const handleEditClick = (order) => {
+    setselectedOrder(order);
+
     setEditModalVisible(true);
   };
 
-  const handleViewClick = (customer) => {
-    setselectedOrder(customer);
+  const handleViewClick = (order) => {
+    setselectedOrder(order);
     setViewModalVisible(true);
   };
 
-  const handleDeleteClick = (customer) => {
-    setselectedOrder(customer);
+  const handleDeleteClick = (order) => {
+    setselectedOrder(order);
     setConfirmDeleteVisible(true);
   };
 
-  const handleEditSave = (updatedCustomer) => {
+  const handleEditSave = (updatedOrder) => {
     // Lógica para guardar los cambios en el cliente
     setEditModalVisible(false);
-    console.log('Customer updated:', updatedCustomer);
+    console.log('Customer updated:', updatedOrder);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
+    try {
+      const url = `/admin/pedido/deletePedido?id=${selectedOrder.id}`
+      const res = await axios.delete(url)
+      if (res.status === 200) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Pedido creado exitosamente!',
+          confirmButtonText: 'OK',
+        });
+      }
+    } catch (error) {
+      handleErrors(error)
+    }
     setConfirmDeleteVisible(false);
-    console.log('Customer deleted:', selectedOrder);
   };
 
 
@@ -231,12 +240,12 @@ export default function PedidosPage() {
       <div className='flex flex-col w-full gap-5 h-screen'>
         <div><h2 className='text-2xl'>Gestión de pedidos</h2></div>
         <div className='w-full flex justify-center'>
-          <button onClick={() => setNewPedidoView(true)} className='bg-gray-300 px-6 py-2 rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Crear nuevo pedido</button>
+          <button onClick={() => setNewPedidoView(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Crear nuevo pedido</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table
             headers={headers}
-            notShow={true}
+            notShow={false}
             data={pedidos}
             onEdit={handleEditClick}
             onView={handleViewClick}
@@ -310,6 +319,57 @@ export default function PedidosPage() {
           </div>
         </div>
       )}
+      <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
+      <ViewOrderDetails object={selectedOrder} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
+      <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm}/>
     </>
   );
+}
+function ViewOrderDetails({ object, show, onClose }) {
+
+  if (!show) return null;
+
+  return (
+    <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+      <div className="bg-gray-50 p-5 rounded-lg">
+        <div className="header pX-5 py-3 gap-5 flex justify-between items-center">
+          <h2 className="text-2xl font-medium">Detalles del pedido</h2>
+          <Button children={<box-icon className='text-4xl' name='x-circle'></box-icon>} id='close-view-product-btn' onClick={onClose} type='button' className='text-gray-500 hover:text-gray-700' />
+        </div>
+        <div className="flex flex-col gap-5">
+          {Object.entries(object)?.map(([key, value]) => (
+            <>
+              <label htmlFor={key}>{key}</label>
+              <input type="text" disabled id={key} value={value} />
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+function DeletePedido({handleSubmit, show, onClose}) {
+  if (!show) return null;
+  return (
+    <div className="modal absolute inset-0 bg-gray-600 bg-opacity-70 flex justify-center items-center animate-fade-in">
+      <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
+        <div className="header mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">¿Desea eliminar este pedido?</h2>
+        </div>
+        <div className="flex justify-around mt-10 items-center gap-6">
+          <button onClick={onClose}
+            className="border-red-600 border-2 text-red-600 text-center text-lg px-6 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200"
+          >
+            No
+          </button>
+          <button onClick={handleSubmit}
+            className="bg-green-600 text-white text-center text-lg px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
+          >
+            Sí
+          </button>
+        </div>
+      </div>
+    </div>
+
+  )
 }

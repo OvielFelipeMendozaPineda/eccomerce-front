@@ -41,7 +41,13 @@ const getAllPedidos = async () => {
   try {
     const url = '/admin/pedido/getAll';
     const response = await axios.get(url);
-    return mockPedido;
+
+    if (response.data.length === 0 || response.data === undefined) {
+      return mockPedido
+    }
+    console.log(response.data);
+
+    return response.data;
   } catch (error) {
     return mockPedido
   }
@@ -93,9 +99,11 @@ export default function PedidosPage() {
       try {
         const pedidosFetch = await getAllPedidos();
         setPedidos(pedidosFetch);
-        console.log(pedidosFetch);
-    
+
         if (pedidosFetch) {
+          console.log("Entra");
+          console.log(pedidosFetch);
+
           const dynamicHeaders = Object.keys(pedidosFetch[0]).map((key) => ({
             key,
             title: key.charAt(0).toUpperCase() + key.slice(1),
@@ -108,10 +116,10 @@ export default function PedidosPage() {
         console.error('Error fetching pedidos:', error);
       }
     };
-    
+
     fetchPedidos();
 
-    
+
   }, [])
 
 
@@ -172,6 +180,8 @@ export default function PedidosPage() {
 
     try {
       const URL = '/admin/pedido/crear';
+      console.log(payload);
+
       const response = await axios.post(URL, payload);
       if (response.status === 201) {
         Toast.fire({
@@ -179,7 +189,7 @@ export default function PedidosPage() {
           title: 'Pedido creado exitosamente!',
           confirmButtonText: 'OK',
         });
-        setSelectedProductos([{ id: '', cantidad: 1 }]);
+        setSelectedProductos([{ id: 0, cantidad: 1 }]);
         setfechaEsperada('');
         setComentarios('');
         setNewPedidoView(false);
@@ -271,14 +281,14 @@ export default function PedidosPage() {
                   >
                     <option value="" disabled>Selecciona un producto</option>
                     {productos.map((prod) => (
-                      <option key={prod.id} value={prod.id}> {prod.nombre} </option>
+                      <option key={parseInt(prod.id)} value={parseInt(prod.id)}> {prod.nombre} </option>
                     ))}
                   </select>
                   <input
                     type="number"
                     value={producto.cantidad}
                     onChange={(e) => handleCantidadChange(index, e)}
-                    min="1"
+                    min={1}
                     placeholder="Cantidad"
                   />
                   <button

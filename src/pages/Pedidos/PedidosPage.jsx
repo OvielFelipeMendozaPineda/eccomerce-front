@@ -219,9 +219,9 @@ export default function PedidosPage() {
 
   const handleDeleteConfirm = async () => {
     try {
-      const url = `/admin/pedido/deletePedido?id=${selectedOrder.id}`
+      const url = `/admin/pedido/delete?id=${selectedOrder.id}`
       const res = await axios.delete(url)
-      if (res.status === 200) {
+      if (res.status === 204) {
         Toast.fire({
           icon: 'success',
           title: 'Pedido creado exitosamente!',

@@ -25,7 +25,7 @@ export default function FooterEcommerce() {
       <ul className="mt-8 flex justify-center gap-6 sm:mt-0 lg:justify-end">
         <li>
           <a
-            href="#"
+            href="https://www.facebook.com/profile.php?id=100077601013752"
             rel="noreferrer"
             target="_blank"
             className="text-gray-700 transition hover:opacity-75"
@@ -44,7 +44,7 @@ export default function FooterEcommerce() {
 
         <li>
           <a
-            href="#"
+            href="https://www.instagram.com/moufflet30/"
             rel="noreferrer"
             target="_blank"
             className="text-gray-700 transition hover:opacity-75"

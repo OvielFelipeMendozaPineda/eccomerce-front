@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Button from '../../components/common/Button/Button';
 import Header from '../../components/common/Header/Header';
 import Table from '../../components/common/Table/Table';
-import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/Modal/Modal';
 import { registerClienteFields } from '../../utils/inputs/product/product';
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors';
 import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
-import EditarCliente from '../../components/EditarCliente/EditarCliente';
+import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
 import InformacionCliente from '../../components/InformacionCliente/InformacionCliente';
 import EliminarCliente from '../../components/EliminarCliente/EliminarCliente';
 
@@ -24,6 +23,16 @@ const Toast = Swal.mixin({
     }
 });
 
+const getAllClientes = async () => {
+    try {
+        const response = await axios.get('/admin/cliente/getAll');
+        return response.data || [];
+    } catch (error) {
+        console.error('Error fetching all clients:', error);
+        return [];
+    }
+};
+
 const getClientesByCity = async (city) => {
     try {
         const response = await axios.get(`/admin/cliente/getAllClientesByCity?city=${city}`);
@@ -34,25 +43,15 @@ const getClientesByCity = async (city) => {
     }
 };
 
-const getAllClientes = async () => {
-    try {
-        const response = await axios.get(`/admin/cliente/getAll`);
-        return response.data || [];
-    } catch (error) {
-        console.error('Error fetching all clients:', error);
-        return [];
-    }
-};
-
 export default function CustomerPage() {
     const [city, setCity] = useState('');
     const [clientes, setClientes] = useState([]);
     const [headers, setHeaders] = useState([]);
-    const [showAble, setShowAble] = useState(false);
-    const [clienteIndex, setClienteIndex] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [detail, setDetail] = useState(false);
-    const [eliminar, setEliminar] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [viewModalVisible, setViewModalVisible] = useState(false);
+    const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
 
     useEffect(() => {
         const fetchClientes = async () => {
@@ -65,7 +64,6 @@ export default function CustomerPage() {
                     title: key.charAt(0).toUpperCase() + key.slice(1),
                     className: 'text-gray-500'
                 }));
-
                 setHeaders(dynamicHeaders);
             }
         };
@@ -77,6 +75,7 @@ export default function CustomerPage() {
             if (city) {
                 const data = await getClientesByCity(city);
                 setClientes(data);
+
                 if (data.length > 0) {
                     const dynamicHeaders = Object.keys(data[0]).map(key => ({
                         key,
@@ -91,50 +90,42 @@ export default function CustomerPage() {
     }, [city]);
 
     const handleClick = () => {
-        const cityInput = document.querySelector('#city-input');
-        setCity(cityInput.value);
+        setCity(document.querySelector('#city-input').value);
     };
 
-    const handleReset = () => {
-        setShowModal(false);
-        setShowAble(false);
-        setClienteIndex(null);
+    const handleReset = async () => {
         setCity('');
-        (async () => {
-            const data = await getAllClientes();
-            setClientes(data);
-            if (data.length > 0) {
-                const dynamicHeaders = Object.keys(data[0]).map(key => ({
-                    key,
-                    title: key.charAt(0).toUpperCase() + key.slice(1),
-                    className: 'text-gray-500'
-                }));
-                setHeaders(dynamicHeaders);
-            }
-        })();
+        const data = await getAllClientes();
+        setClientes(data);
+
+        if (data.length > 0) {
+            const dynamicHeaders = Object.keys(data[0]).map(key => ({
+                key,
+                title: key.charAt(0).toUpperCase() + key.slice(1),
+                className: 'text-gray-500'
+            }));
+            setHeaders(dynamicHeaders);
+        }
     };
 
-    const handleModal = (e) => {
+    const handleModal = () => {
         setShowModal(prev => !prev);
     };
-
-    const [formData, setFormData] = useState(
-        registerClienteFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
-    );
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    registerClienteFields.forEach((field) => field.onChange = handleChange);
+    const [formData, setFormData] = useState(
+        registerClienteFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
+    );
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         formData.username = formData.primerNombre + formData.id.slice(-1, 4);
-        console.log(formData);
-
         const payload = formData;
+
         try {
             const URL = '/admin/cliente/newCliente';
             const response = await axios.post(URL, payload);
@@ -150,55 +141,32 @@ export default function CustomerPage() {
         }
     };
 
-    const HandleEditClienteModal = (booleano) => {
-        setShowAble(booleano);
+    const handleEditClick = (customer) => {
+        setSelectedCustomer(customer);
+        setEditModalVisible(true);
     };
 
-    const showDetail = (booleano) => {
-        setDetail(booleano);
-    };
-    const showDelete = (booleano) => {
-        setEliminar(booleano);
+    const handleViewClick = (customer) => {
+        setSelectedCustomer(customer);
+        setViewModalVisible(true);
     };
 
-    useEffect(() => {
-        const editButtonList = document?.querySelectorAll('.edit-btn');
-        editButtonList.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                setClienteIndex(btn.id);
-                HandleEditClienteModal(true);
-            });
-        });
+    const handleDeleteClick = (customer) => {
+        setSelectedCustomer(customer);
+        setConfirmDeleteVisible(true);
+    };
 
-        return () => {
-            editButtonList.forEach((btn) => btn.removeEventListener('click', () => { }));
-        };
-    }, [clientes]);
+    const handleEditSave = (updatedCustomer) => {
+        // Lógica para guardar los cambios en el cliente
+        setEditModalVisible(false);
+        console.log('Customer updated:', updatedCustomer);
+    };
 
-
-    useEffect(() => {
-        const detailsButtonList = document?.querySelectorAll('.details-btn');
-        detailsButtonList.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                setClienteIndex(btn.id);
-                showDetail(true);
-            });
-        });
-    }, [clientes])
-
-    useEffect(() => {
-        const detailsButtonList = document?.querySelectorAll('.delete-btn');
-        detailsButtonList.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                setClienteIndex(btn.id);               
-                setEliminar(true);
-            });
-        });
-    }, [clientes])
-
-    const mock = [
-        {id: 123, name: 'felipe'}
-    ]
+    const handleDeleteConfirm = () => {
+        // Lógica para eliminar el cliente
+        setConfirmDeleteVisible(false);
+        console.log('Customer deleted:', selectedCustomer);
+    };
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -220,7 +188,6 @@ export default function CustomerPage() {
                             id="city-input"
                             className='rounded-lg border-none focus:ring-0 bg-gray-200'
                             type="search"
-                            name="city-input"
                             placeholder="Ingresa una ciudad"
                         />
                     </div>
@@ -241,7 +208,14 @@ export default function CustomerPage() {
                 </div>
             </div>
             <div className="table-view bg-gray-200 w-full h-full mt-5">
-                <Table data={clientes} headers={headers} notShow={false} />
+                <Table
+                    headers={headers}
+                    notShow={true}
+                    data={clientes}
+                    onEdit={handleEditClick}
+                    onView={handleViewClick}
+                    onDelete={handleDeleteClick}
+                />
             </div>
             <Modal
                 modalTitle="Registrar Cliente"
@@ -251,24 +225,24 @@ export default function CustomerPage() {
                 show={showModal}
                 handleModal={handleModal}
             />
-            <EditarCliente
-                customer={clientes[clienteIndex]}
-                handleClick={''}
-                handleModal={HandleEditClienteModal}
-                show={showAble}
+            <ModalEditar
+                objecto={selectedCustomer} 
+                show={editModalVisible} 
+                onClose={() => setEditModalVisible(false)}
+                onSave={handleEditSave} 
+                entidad={"Producto"}
             />
             <InformacionCliente
-                customer={clientes[clienteIndex]}
-                handleClick={''}
-                handleModal={showDetail}
-                show={detail}
+                customer={selectedCustomer}
+                show={viewModalVisible}
+                handleModal={() => setViewModalVisible(false)}
             />
             <EliminarCliente
-                customer={clientes[clienteIndex]}
-                handleClick={''}
-                handleModal={showDelete}
-                show={eliminar}
-            /> 
+                customer={selectedCustomer}
+                show={confirmDeleteVisible}
+                handleModal={() => setConfirmDeleteVisible(false)}
+                handleConfirm={handleDeleteConfirm}
+            />
         </div>
     );
 }

@@ -23,9 +23,6 @@ const mockPedido = [
     fechaEntrega: null,
     estado: 'creado',
     comentarios: 'El pedido trae comentarios',
-    productos: [
-      { pedido: 1, producto: 1, cantidad: 1, precio: 10.99 }
-    ]
   }
 ]
 
@@ -93,23 +90,29 @@ export default function PedidosPage() {
 
   useEffect(() => {
     const fetchPedidos = async () => {
-      const pedidos = await getAllPedidos();
-      setPedidos(pedidos);
-      console.log(pedidos);
-
-      if (pedidos.length > 0) {
-        const firstPedido = pedidos[0];
-        const dynamicHeaders = Object.entries(firstPedido).map(([key, value]) => ({
-          key,
-          title: key.charAt(0).toUpperCase() + key.slice(1),
-          className: 'text-gray-500'
-        }));
-        setHeaders(dynamicHeaders);
+      try {
+        const pedidosFetch = await getAllPedidos();
+        setPedidos(pedidosFetch);
+        console.log(pedidosFetch);
+    
+        if (pedidosFetch) {
+          const dynamicHeaders = Object.keys(pedidosFetch[0]).map((key) => ({
+            key,
+            title: key.charAt(0).toUpperCase() + key.slice(1),
+            className: 'text-gray-500'
+          }));
+          console.log(dynamicHeaders);
+          setHeaders(dynamicHeaders);
+        }
+      } catch (error) {
+        console.error('Error fetching pedidos:', error);
       }
     };
+    
     fetchPedidos();
-  }, [])
 
+    
+  }, [])
 
 
   useEffect(() => {

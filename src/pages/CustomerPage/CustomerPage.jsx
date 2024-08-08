@@ -81,7 +81,7 @@ export default function CustomerPage() {
                         key,
                         title: key.charAt(0).toUpperCase() + key.slice(1),
                         className: 'text-gray-500'
-                    }));
+                    }));                    
                     setHeaders(dynamicHeaders);
                 }
             }

@@ -112,20 +112,24 @@ export default function CustomerPage() {
         setShowModal(prev => !prev);
     };
 
+    const [formData, setFormData] = useState(
+        registerClienteFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
+    );
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    const [formData, setFormData] = useState(
-        registerClienteFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
-    );
+
+    registerClienteFields.forEach((field) => field.onChange = handleChange);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         formData.username = formData.primerNombre + formData.id.slice(-1, 4);
         const payload = formData;
-
+        console.log(payload);
+        
         try {
             const URL = '/admin/cliente/newCliente';
             const response = await axios.post(URL, payload);
@@ -163,7 +167,6 @@ export default function CustomerPage() {
     };
 
     const handleDeleteConfirm = () => {
-        // Lógica para eliminar el cliente
         setConfirmDeleteVisible(false);
         console.log('Customer deleted:', selectedCustomer);
     };

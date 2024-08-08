@@ -10,6 +10,7 @@ import RutaPrivada from './utils/RutaPrivada';
 import DefaultComponent from './pages/Home/DefaultComponent';
 import Ecommerce from './components/ecommerce/Ecommerce';
 import CustomerPage from './pages/CustomerPage/CustomerPage';
+import PedidosPage from './pages/Pedidos/PedidosPage';
 
 
 
@@ -24,6 +25,7 @@ const App = () => (
                     <Route path='' element={<Home />}>
                         <Route index element={<DefaultComponent />} />
                         <Route path='productos' element={<ProductsPage />} />
+                        <Route path='orders' element={<PedidosPage />} />
                         <Route path='customers' element={<CustomerPage />} >
 
                         </Route>

@@ -29,7 +29,7 @@ const proveedoresJSON = async () => {
 
 const gamasJSON = async () => {
     try {
-        const response = await axios.get("/admin/gama/getAll")
+        const response = await axios.get("/public/gama/getAll")
         if (response.data) {
             return response.data
         } else {

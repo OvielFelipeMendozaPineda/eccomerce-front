@@ -132,19 +132,6 @@ export const AddProductForm = ({ gamas, proveedores }) => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="categoria" className="block text-sm font-medium text-gray-700">
-          Categoría
-        </label>
-        <input
-          type="text"
-          id="categoria"
-          name="categoria"
-          value={formData.categoria}
-          onChange={handleChange}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-        />
-      </div>
-      <div className="mb-4">
         <label htmlFor="gama" className="block text-sm font-medium text-gray-700">
           Gama
         </label>

@@ -3,6 +3,7 @@ import Header from './Header/HeaderEcommerce'
 import FooterEcommerce from './FooterEcommerce/FooterEcommerce'
 import Banner from './Banner/Banner';
 import Section from './Section/Section';
+import { AddProductForm } from '../common/FormCreate/FormCreate';
 // import "./Ecommerce.css"
 export default function Ecommerce() {
     const gamas = [
@@ -20,6 +21,7 @@ export default function Ecommerce() {
         <div >
             <Header />
             <Banner />
+            <AddProductForm gamas= {gamas} proveedores= {proveedores} />
             <Section />
             <FooterEcommerce />
         </div>

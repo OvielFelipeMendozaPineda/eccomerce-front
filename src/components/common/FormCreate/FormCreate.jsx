@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
+import axios from '../../../utils/axios/ConfigAxios';
+import { handleErrors } from '../../../utils/HandleErrors/HandleErrors';
+import Swal from 'sweetalert2';
 
- export const AddProductForm = ({ gamas, proveedores }) => {
+export const AddProductForm = ({ gamas, proveedores }) => {
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -40,10 +56,38 @@ import React, { useState } from 'react';
     e.preventDefault();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Aquí puedes agregar la lógica para enviar el formulario al servidor
+
+    const payload = new FormData();
+    payload.append('producto', new Blob([JSON.stringify({
+      codigo: formData.codigo,
+      nombre: formData.nombre,
+      descripcion: formData.descripcion,
+      precio: formData.precio,
+      gamaId: formData.gama,
+      proveedorId: formData.proveedor,
+    })], { type: 'application/json' }));
+    payload.append('imagen', formData.imagen);
+
+    try {
+      const URL = '/admin/producto/crear';
+      const response = await axios.post(URL, payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if (response.status === 201) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Producto registrado exitosamente!',
+          confirmButtonText: 'OK',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      handleErrors(error);
+    }
   };
 
   return (

@@ -3,7 +3,7 @@ import { Toggle } from '../Toggle/Toggle';
 
 const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => (
   <div className="px-4 py-3">
-    <div className="flex overflow-hidden rounded-xl border border-[#d0dbe6] bg-[#f8fafb]">
+    <div className="flex overflow-x-scroll overflow-y-scroll rounded-xl border border-[#d0dbe6] bg-[#f8fafb]">
       <table className="flex-1">
         <thead>
           <tr className="bg-[#f8fafb]">

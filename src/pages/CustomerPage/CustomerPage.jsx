@@ -10,6 +10,7 @@ import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
 import EditarCliente from '../../components/EditarCliente/EditarCliente';
 import InformacionCliente from '../../components/InformacionCliente/InformacionCliente';
+import EliminarCliente from '../../components/EliminarCliente/EliminarCliente';
 
 const Toast = Swal.mixin({
     toast: true,
@@ -51,6 +52,7 @@ export default function CustomerPage() {
     const [clienteIndex, setClienteIndex] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [detail, setDetail] = useState(false);
+    const [eliminar, setEliminar] = useState(false);
 
     useEffect(() => {
         const fetchClientes = async () => {
@@ -155,6 +157,9 @@ export default function CustomerPage() {
     const showDetail = (booleano) => {
         setDetail(booleano);
     };
+    const showDelete = (booleano) => {
+        setEliminar(booleano);
+    };
 
     useEffect(() => {
         const editButtonList = document?.querySelectorAll('.edit-btn');
@@ -181,6 +186,19 @@ export default function CustomerPage() {
         });
     }, [clientes])
 
+    useEffect(() => {
+        const detailsButtonList = document?.querySelectorAll('.delete-btn');
+        detailsButtonList.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                setClienteIndex(btn.id);               
+                setEliminar(true);
+            });
+        });
+    }, [clientes])
+
+    const mock = [
+        {id: 123, name: 'felipe'}
+    ]
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -245,6 +263,12 @@ export default function CustomerPage() {
                 handleModal={showDetail}
                 show={detail}
             />
+            <EliminarCliente
+                customer={clientes[clienteIndex]}
+                handleClick={''}
+                handleModal={showDelete}
+                show={eliminar}
+            /> 
         </div>
     );
 }

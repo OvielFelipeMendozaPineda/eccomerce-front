@@ -49,7 +49,6 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       const data = await getAllProducts();
       setProducts(data);
-
     };
     fetchProducts();
   }, []);
@@ -74,40 +73,55 @@ export default function ProductsPage() {
   };
 
   const handleEditSave = async (updatedProduct) => {
-  
-      const data = new FormData();
-  
-      // Crear un Blob para el JSON con el tipo 'application/json'
-      data.append('producto', new Blob([JSON.stringify({
-        nombre: updatedProduct.nombre,
-        descripcion: updatedProduct.descripcion,
-        precio: updatedProduct.precio,
-        gamaId: updatedProduct.gamaId,
-        proveedorId: updatedProduct.proveedorId,
-        estado: updatedProduct.estado
-      })], { type: 'application/json' }));
-  
-      // Añadir la imagen si está disponible
-      if (updatedProduct.imagen) {
-        data.append('imagen', updatedProduct.imagen);
-      }
-  
-      axios.post(`/admin/producto/post`, data, {
+    const data = new FormData();
+
+    // Crear un Blob para el JSON con el tipo 'application/json'
+    data.append('producto', new Blob([JSON.stringify({
+      nombre: updatedProduct.nombre,
+      descripcion: updatedProduct.descripcion,
+      precio: updatedProduct.precio,
+      gamaId: updatedProduct.gamaId,
+      proveedorId: updatedProduct.proveedorId,
+      estado: updatedProduct.estado
+    })], { type: 'application/json' }));
+
+    // Añadir la imagen si está disponible
+    if (updatedProduct.imagen) {
+      data.append('imagen', updatedProduct.imagen);
+    }
+
+    try {
+      const response = await axios.put(`/admin/producto/update/${updatedProduct.id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      })
-        .then((response) => {
-          console.log('Producto creado con éxito:', response.data);
-        })
-        .catch((error) => {
-          console.error('Error al crear el producto:', error);
-        });
+      });
+      Toast.fire({
+        icon: 'success',
+        title: 'Producto actualizado con éxito',
+      });
+      setEditModalVisible(false);
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error);
+      Toast.fire({
+        icon: 'error',
+        title: 'Error al actualizar el producto',
+      });
+    }
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
+    try {
+      const URL = `/admin/producto/delete/${selectedProduct.id}`;
+      const response = await axios.delete(URL);
+      if (response.status === 200) {
+        Toast.fire('Success', 'Producto eliminado con éxito', 'success');
+        setProducts(products.filter(product => product.id !== selectedProduct.id));
+      }
+    } catch (error) {
+      Toast.fire('Error', 'No se pudo eliminar el producto.', 'error');
+    }
     setConfirmDeleteVisible(false);
-    console.log('Product deleted:', selectedProduct);
   };
 
   return (

@@ -18,22 +18,40 @@ const Toast = Swal.mixin({
 const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => {
 
   const handleToggleChange = async (row) => {
-        const payload = row;
-        payload.estado = false;
-        try {
-            const URL = `/admin/producto/update/${row.id}`
-            const response = await axios.put(URL, payload)
-            if (response.data == 200) {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Cliente actualizado exitosamente!',
-                    confirmButtonText: 'OK',
-                  });
-            }
-        } catch (error) {
-            
+    const data = new FormData();
+
+    // Crear un Blob para el JSON con el tipo 'application/json'
+    data.append('producto', new Blob([JSON.stringify({
+      nombre: row.nombre,
+      descripcion: row.descripcion,
+      precio: row.precio,
+      gamaId: row.gamaId,
+      proveedorId: row.proveedorId,
+      estado: !row.estado
+    })], { type: 'application/json' }));
+
+    // Añadir la imagen si está disponible
+    if (row.imagen) {
+      data.append('imagen', row.imagen);
+    }
+
+    try {
+      const response = await axios.put(`/admin/producto/update/${row.id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-        console.log('Customer updated:', row);
+      });
+      Toast.fire({
+        icon: 'success',
+        title: 'Producto actualizado con éxito',
+      });
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error);
+      Toast.fire({
+        icon: 'error',
+        title: 'Error al actualizar el producto',
+      });
+    }
   };
 
   return (

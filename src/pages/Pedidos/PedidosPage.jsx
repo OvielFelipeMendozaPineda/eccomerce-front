@@ -29,15 +29,6 @@ const mockPedido = [
   }
 ]
 
-const getAllEstados = async () => {
-    try {
-      const url = `/admin/estado/getAll`
-      const response = await axios(url);
-      return response.data || []
-    } catch (error) {
-      
-    }
-}
 const getAllProductos = async () => {
   try {
     const url = '/admin/producto/getAll';
@@ -64,7 +55,7 @@ const getAllPedidos = async () => {
 
 const getAllPedidosByEstado = async (state) => {
   try {
-    const url = `/admin/pedido/getAllByState?estado=${state}`;
+    const url = `/admin/pedido/getAllByEstado?estado=${state}`;
     const response = await axios.get(url);
     return response.data || [];
   } catch (error) {
@@ -72,7 +63,13 @@ const getAllPedidosByEstado = async (state) => {
   }
 };
 
-
+const estados = [
+  'PENDIENTE',
+  'PROCESANDO',
+  'ENVIADO',
+  'ENTREGADO',
+  'CANCELADO',
+]
 
 
 export default function PedidosPage() {
@@ -88,7 +85,15 @@ export default function PedidosPage() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
-  const [estados, setEstados] = useState([])
+  const [enviado, setenviado] = useState()
+  const estadosEnum = [
+    'PENDIENTE',
+    'PROCESANDO',
+    'ENVIADO',
+    'ENTREGADO',
+    'CANCELADO',
+  ]
+
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -100,15 +105,7 @@ export default function PedidosPage() {
 
   }, []);
 
-  useEffect(() => {
-    const fetchEstados = async () => {
-      const estados = await getAllEstados();
-      setProductos(estados);
-    };
 
-    fetchEstados();
-
-  }, []);
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -117,9 +114,6 @@ export default function PedidosPage() {
         setPedidos(pedidosFetch);
 
         if (pedidosFetch) {
-          console.log("Entra");
-          console.log(pedidosFetch);
-
           const dynamicHeaders = Object.keys(pedidosFetch[0]).map((key) => ({
             key,
             title: key.charAt(0).toUpperCase() + key.slice(1),
@@ -135,11 +129,15 @@ export default function PedidosPage() {
     fetchPedidos();
 
 
-  }, [pedidos])
+  }, [])
 
 
   useEffect(() => {
+    console.log('fetch por estado');
+    
     const fetchPedidosByEstado = async () => {
+      console.log(pedidosEstado);
+      
       const pedidos = await getAllPedidosByEstado(pedidosEstado);
       setProductos(pedidos);
     };
@@ -230,7 +228,7 @@ export default function PedidosPage() {
     setConfirmDeleteVisible(true);
   };
 
-  const handleEditSave =  async (updatedOrder) => {
+  const handleEditSave = async (updatedOrder) => {
     const url = `/admin/pedido/update/${updatedOrder.id}`
     const payload = updatedOrder
     try {
@@ -242,10 +240,10 @@ export default function PedidosPage() {
           confirmButtonText: 'OK',
         });
       }
-      
+
     } catch (error) {
       handleErrors(error)
-    } 
+    }
     setEditModalVisible(false);
     console.log('Customer updated:', updatedOrder);
   };
@@ -267,6 +265,9 @@ export default function PedidosPage() {
     setConfirmDeleteVisible(false);
   };
 
+  const handleStatusSelectorChange = (e) => {
+    setPedidosEstado(e.target.value)    
+  }
 
   return (
     <>
@@ -274,6 +275,15 @@ export default function PedidosPage() {
         <div><h2 className='text-2xl'>Gestión de pedidos</h2></div>
         <div className='w-full flex justify-center'>
           <button onClick={() => setNewPedidoView(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Crear nuevo pedido</button>
+        </div>
+        <div className='flex gap-5 items-center'>
+          <label>Buscar Pedido por estado </label>
+          <select onChange={handleStatusSelectorChange} className='rounded-lg focus:ring-0' name="searchByStatus" >
+            <option className='text-gray-200' disabled> Seleccionar estado </option>
+            {estadosEnum.map(estado => (
+              <option value={estado}> {estado}</option>
+            ))}
+          </select>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table
@@ -354,7 +364,7 @@ export default function PedidosPage() {
       )}
       <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
       <ViewOrderDetails object={selectedOrder} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
-      <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm}/>
+      <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm} />
     </>
   );
 }
@@ -381,7 +391,7 @@ function ViewOrderDetails({ object, show, onClose }) {
     </div>
   );
 };
-function DeletePedido({handleSubmit, show, onClose}) {
+function DeletePedido({ handleSubmit, show, onClose }) {
   if (!show) return null;
   return (
     <div className="modal absolute inset-0 bg-gray-600 bg-opacity-70 flex justify-center items-center animate-fade-in">

@@ -175,6 +175,7 @@ export default function CustomerPage() {
                   });
             }
         } catch (error) {
+            handleErrors(error)
             
         }
         setEditModalVisible(false);

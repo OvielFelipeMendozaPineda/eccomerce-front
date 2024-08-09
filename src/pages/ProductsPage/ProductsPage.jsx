@@ -74,35 +74,36 @@ export default function ProductsPage() {
   };
 
   const handleEditSave = async (updatedProduct) => {
-  
-      const data = new FormData();
-  
-      // Crear un Blob para el JSON con el tipo 'application/json'
-      data.append('producto', new Blob([JSON.stringify({
-        nombre: updatedProduct.nombre,
-        descripcion: updatedProduct.descripcion,
-        precio: updatedProduct.precio,
-        gamaId: updatedProduct.gamaId,
-        proveedorId: updatedProduct.proveedorId,
-        estado: updatedProduct.estado
-      })], { type: 'application/json' }));
-  
-      // Añadir la imagen si está disponible
-      if (updatedProduct.imagen) {
-        data.append('imagen', updatedProduct.imagen);
+
+    const data = new FormData();
+
+    // Crear un Blob para el JSON con el tipo 'application/json'
+    data.append('producto', new Blob([JSON.stringify({
+      nombre: updatedProduct.nombre,
+      descripcion: updatedProduct.descripcion,
+      precio: updatedProduct.precio,
+      gamaId: updatedProduct.gamaId,
+      proveedorId: updatedProduct.proveedorId,
+      estado: updatedProduct.estado
+    })], { type: 'application/json' }));
+
+    // Añadir la imagen si está disponible
+    if (updatedProduct.imagen) {
+      data.append('imagen', updatedProduct.imagen);
+    }
+    console.log('Data:', data.values());
+
+    axios.put(`/admin/producto/update/${updatedProduct.id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
-  
-      axios.post(`/admin/producto/post`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+    })
+      .then((response) => {
+        console.log('Producto creado con éxito:', response.data);
       })
-        .then((response) => {
-          console.log('Producto creado con éxito:', response.data);
-        })
-        .catch((error) => {
-          console.error('Error al crear el producto:', error);
-        });
+      .catch((error) => {
+        console.error('Error al crear el producto:', error);
+      });
   };
 
   const handleDeleteConfirm = () => {
@@ -132,7 +133,8 @@ export default function ProductsPage() {
         </div>
       </div>
       <ModalNewProduct show={showModal} handleModal={handleModal} />
-      <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
+      {/* <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} /> */}
+      <EditProductModal objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} />
       <ViewProductModal product={selectedProduct} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <ConfirmDeleteModal show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>

@@ -166,6 +166,7 @@ export default function CustomerPage() {
         const payload = updatedCustomer;
         const url = `/admin/cliente/put/${payload.id}` 
         try {
+            const url = `/admin/cliente/update/${updatedCustomer.id}`
             const response = await axios.put(url, payload)
             if (response.data == 200) {
                 Toast.fire({

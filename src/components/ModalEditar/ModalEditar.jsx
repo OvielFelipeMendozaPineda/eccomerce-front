@@ -23,7 +23,7 @@ export const ModalEditar = ({ objecto, show, onClose, onSave, entidad }) => {
     if (!show) return null;
   
     return (
-      <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+      <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in z-10">
         <div className="bg-gray-50 p-10 rounded-lg">
           <div className="header px-5 py-3 flex justify-bet gap-10  items-center">
             <h2 className="text-xl self-start -translate-y-1 font-medium">Editar {entidad}</h2>

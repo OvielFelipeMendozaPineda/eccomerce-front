@@ -1,30 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '../../components/common/Table/Table';
 import Header from '../../components/common/Header/Header';
 import SearchBar from '../../components/common/SearchBar/SearchBar';
 import Button from '../../components/common/Button/Button';
-import { productInput, dropdownInput } from '../../utils/inputs/product/product';
 import { EditProductModal, ViewProductModal, ConfirmDeleteModal } from '../../components/common/ModalsProduct/ModalsProduct';
 import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
 import ModalNewProduct from './ModalNewProduct';
+import axios from '../../utils/axios/ConfigAxios';
+import Swal from 'sweetalert2';
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
+  }
+});
+
+// Función para obtener todos los productos
+const getAllProducts = async () => {
+  try {
+    const response = await axios.get('/admin/producto/getAll');
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching all products:', error);
+    return [];
+  }
+};
 
 export default function ProductsPage() {
-  const products = [
-    { id: 1, imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$15', inventory: '12', status: 'Active' },
-    { id: 2, imageUrl: 'https://cdn.usegalileo.ai/stability/90aa788c-1e5b-4186-91ce-c2ad34320bbf.png', name: 'Coffee Mug', price: '$20', inventory: '12', status: 'Active' },
-  ];
-
+  const [products, setProducts] = useState([]);
   const headers = [
-    { title: 'Product', key: 'name', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-176 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal' },
-    { title: 'Price', key: 'price', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-296 px-4 py-3 text-left text-[#4f7296] w-[400px] text-sm font-medium leading-normal' },
-    { title: 'Inventory', key: 'inventory', className: 'table-ec883312-db4a-45d6-8895-5f43c9f4c6a2-column-416 px-4 py-3 text-left text-[#4f7296] w-[400px] text-sm font-medium leading-normal' },
+    { title: 'ID', key: 'id', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
+    { title: 'Nombre', key: 'nombre', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
+    { title: 'Precio', key: 'precio', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' }
   ];
-
   const [showModal, setShowModal] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await getAllProducts();
+      setProducts(data);
+
+    };
+    fetchProducts();
+  }, []);
 
   const handleModal = () => {
     setShowModal(!showModal);

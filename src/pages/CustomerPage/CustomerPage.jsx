@@ -164,6 +164,7 @@ export default function CustomerPage() {
 
     const handleEditSave = async (updatedCustomer) => {
         const payload = updatedCustomer;
+        const url = `/admin/cliente/put/${payload.id}` 
         try {
             const url = `/admin/cliente/update/${updatedCustomer.id}`
             const response = await axios.put(url, payload)
@@ -175,6 +176,7 @@ export default function CustomerPage() {
                   });
             }
         } catch (error) {
+            handleErrors(error)
             
         }
         setEditModalVisible(false);

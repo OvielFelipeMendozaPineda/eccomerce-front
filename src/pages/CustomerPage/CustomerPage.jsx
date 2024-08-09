@@ -155,20 +155,33 @@ export default function CustomerPage() {
         setViewModalVisible(true);
     };
 
-    const handleDeleteClick = (customer) => {
+    const handleDeleteClick =  async(customer) => {
         setSelectedCustomer(customer);
+        const data = await getAllClientes();
+        setClientes(data);
         setConfirmDeleteVisible(true);
     };
 
-    const handleEditSave = (updatedCustomer) => {
-        // Lógica para guardar los cambios en el cliente
+    const handleEditSave = async (updatedCustomer) => {
+        const payload = updatedCustomer;
+        try {
+            const response = await axios.put(url, payload)
+            if (response.data == 200) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Cliente actualizado exitosamente!',
+                    confirmButtonText: 'OK',
+                  });
+            }
+        } catch (error) {
+            
+        }
         setEditModalVisible(false);
         console.log('Customer updated:', updatedCustomer);
     };
 
     const handleDeleteConfirm = () => {
         setConfirmDeleteVisible(false);
-        console.log('Customer deleted:', selectedCustomer);
     };
 
     return (

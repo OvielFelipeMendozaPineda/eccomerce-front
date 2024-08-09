@@ -29,7 +29,15 @@ const mockPedido = [
   }
 ]
 
-
+const getAllEstados = async () => {
+    try {
+      const url = `/admin/estado/getAll`
+      const response = await axios(url);
+      return response.data || []
+    } catch (error) {
+      
+    }
+}
 const getAllProductos = async () => {
   try {
     const url = '/admin/producto/getAll';
@@ -80,6 +88,7 @@ export default function PedidosPage() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  const [estados, setEstados] = useState([])
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -88,6 +97,16 @@ export default function PedidosPage() {
     };
 
     fetchProductos();
+
+  }, []);
+
+  useEffect(() => {
+    const fetchEstados = async () => {
+      const estados = await getAllEstados();
+      setProductos(estados);
+    };
+
+    fetchEstados();
 
   }, []);
 
@@ -116,7 +135,7 @@ export default function PedidosPage() {
     fetchPedidos();
 
 
-  }, [])
+  }, [pedidos])
 
 
   useEffect(() => {
@@ -216,7 +235,13 @@ export default function PedidosPage() {
     const payload = updatedOrder
     try {
       const response = await axios.put(url, payload)
-      console.log(response.status);
+      if (response.status === 200) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Pedido actualizado exitosamente!',
+          confirmButtonText: 'OK',
+        });
+      }
       
     } catch (error) {
       handleErrors(error)
@@ -232,7 +257,7 @@ export default function PedidosPage() {
       if (res.status === 204) {
         Toast.fire({
           icon: 'success',
-          title: 'Pedido creado exitosamente!',
+          title: 'Pedido eliminado exitosamente!',
           confirmButtonText: 'OK',
         });
       }

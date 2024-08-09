@@ -211,8 +211,16 @@ export default function PedidosPage() {
     setConfirmDeleteVisible(true);
   };
 
-  const handleEditSave = (updatedOrder) => {
-    // Lógica para guardar los cambios en el cliente
+  const handleEditSave =  async (updatedOrder) => {
+    const url = `/admin/pedido/update/${updatedOrder.id}`
+    const payload = updatedOrder
+    try {
+      const response = await axios.put(url, payload)
+      console.log(response.status);
+      
+    } catch (error) {
+      handleErrors(error)
+    } 
     setEditModalVisible(false);
     console.log('Customer updated:', updatedOrder);
   };

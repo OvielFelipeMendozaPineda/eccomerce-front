@@ -226,11 +226,12 @@ export default function CustomerPage() {
             <div className="table-view bg-gray-200 w-full h-full mt-5">
                 <Table
                     headers={headers}
-                    notShow={true}
+                    notShow={false}
                     data={clientes}
                     onEdit={handleEditClick}
                     onView={handleViewClick}
                     onDelete={handleDeleteClick}
+
                 />
             </div>
             <Modal

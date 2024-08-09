@@ -147,6 +147,18 @@ export default function SidebarMenu() {
 
             }}
           />
+          <MenuItem
+            icon={<i className='bx bx-user text-white'></i>}
+            itemText="Empleados"
+            arrow={<i className={`bx bx-chevron-right text-xl text-white ${isCollapsed ? 'hidden' : 'visible'}`}></i>}
+            isCollapsed={isCollapsed}
+            isSelected={selectedItem === 'employees'}
+            to="/home/employees"
+            onClick={() => {
+              handleNavigate('employees')
+
+            }}
+          />
         </div>
         <div className='flex justify-between items-center self-end text-white m-5 rounded-lg p-3 font-bold'>
           {!isCollapsed && (

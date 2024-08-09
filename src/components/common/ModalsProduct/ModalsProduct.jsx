@@ -53,33 +53,51 @@ const EditProductModal = ({ objecto, show, onClose, onSave, entidad }) => {
     );
   };
 
-const ViewProductModal = ({ product, show, onClose }) => {
-  if (!show) return null;
-
-  return (
-    <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
-      <div className="bg-gray-50 p-5 rounded-lg">
-        <div className="header p-3 flex justify-between items-center">
-          <h2 className="text-2xl font-medium">Detalles del Producto</h2>
-          <Button children={<box-icon className='text-4xl' name='x-circle'></box-icon>} id='close-view-product-btn' onClick={onClose} type='button' className='text-gray-500 hover:text-gray-700' />
-        </div>
-        <div className="flex flex-col gap-5">
-          <img src={product.imageUrl} alt={product.name} className="w-full h-auto rounded-lg" />
-          <p><strong>Nombre:</strong> {product.name}</p>
-          <p><strong>Precio:</strong> {product.price}</p>
-          <p><strong>Inventario:</strong> {product.inventory}</p>
-          <p><strong>Estado:</strong> {product.status}</p>
+  const ViewProductModal = ({ product, show, onClose }) => {
+    if (!show) return null;
+  
+    let imageUrl = null;
+  
+    if (product.imagen) {
+      try {
+        // Si product.imagen ya es una cadena base64, simplemente añádelo al prefijo
+        imageUrl = `data:image/jpeg;base64,${product.imagen}`; // Cambia a image/png si es necesario
+      } catch (error) {
+        console.error("Error al crear la URL de la imagen: ", error);
+      }
+    }
+  
+    return (
+      <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in z-10">
+        <div className="bg-gray-50 p-5 rounded-lg">
+          <div className="header p-3 flex justify-between items-center">
+            <h2 className="text-2xl font-medium">Detalles del Producto</h2>
+            <Button children={<box-icon className='text-4xl' name='x-circle'></box-icon>} id='close-view-product-btn' onClick={onClose} type='button' className='text-gray-500 hover:text-gray-700' />
+          </div>
+          <div className="flex flex-col gap-5">
+            {imageUrl ? (
+              <img src={imageUrl} alt={product.nombre} className="w-full h-auto rounded-lg" />
+            ) : (
+              <p>No se pudo cargar la imagen.</p>
+            )}
+            <p><strong>Nombre:</strong> {product.nombre}</p>
+            <p><strong>Precio:</strong> {product.precio}</p>
+            <p><strong>Estado:</strong> {product.estado === true ? "Activo" : "Desactivo"}</p>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+  
+  
+  
+  
 
 const ConfirmDeleteModal = ({ show, onClose, onConfirm }) => {
   if (!show) return null;
 
   return (
-    <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+    <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in z-10">
       <div className="bg-gray-50 p-5 rounded-lg">
         <div className="header p-3 flex justify-between items-center">
           <h2 className="text-2xl font-medium">Confirmar Eliminación</h2>

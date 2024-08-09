@@ -165,6 +165,7 @@ export default function CustomerPage() {
     const handleEditSave = async (updatedCustomer) => {
         const payload = updatedCustomer;
         try {
+            const url = `/admin/cliente/update/${updatedCustomer.id}`
             const response = await axios.put(url, payload)
             if (response.data == 200) {
                 Toast.fire({

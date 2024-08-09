@@ -73,10 +73,36 @@ export default function ProductsPage() {
     setConfirmDeleteVisible(true);
   };
 
-  const handleEditSave = (updatedProduct) => {
-    // Lógica para guardar los cambios en el producto
-    setEditModalVisible(false);
-    console.log('Product updated:', updatedProduct);
+  const handleEditSave = async (updatedProduct) => {
+  
+      const data = new FormData();
+  
+      // Crear un Blob para el JSON con el tipo 'application/json'
+      data.append('producto', new Blob([JSON.stringify({
+        nombre: updatedProduct.nombre,
+        descripcion: updatedProduct.descripcion,
+        precio: updatedProduct.precio,
+        gamaId: updatedProduct.gamaId,
+        proveedorId: updatedProduct.proveedorId,
+        estado: updatedProduct.estado
+      })], { type: 'application/json' }));
+  
+      // Añadir la imagen si está disponible
+      if (updatedProduct.imagen) {
+        data.append('imagen', updatedProduct.imagen);
+      }
+  
+      axios.post(`/admin/producto/post`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then((response) => {
+          console.log('Producto creado con éxito:', response.data);
+        })
+        .catch((error) => {
+          console.error('Error al crear el producto:', error);
+        });
   };
 
   const handleDeleteConfirm = () => {

@@ -1,6 +1,7 @@
- 
+
 import { useState, useEffect } from 'react'
 import axios from '../../utils/axios/ConfigAxios'
+import Table from '../../components/common/Table/Table'
 
 const mockRoles = [
   { id: 1, rol: 'Gerente' },
@@ -62,14 +63,46 @@ export default function EmpleadosPage() {
   const [roles, setroles] = useState([])
   const [oficinas, setoficinas] = useState([])
   const [empleados, setempleados] = useState([])
+  const [headers, setHeaders] = useState([])
+  const [selectedEmployee, setSelectedEmployee] = useState('')
+  const [EditModalVisible, setEditModalVisible] = useState(false)
+  const [ViewModalVisible, setViewModalVisible] = useState(false)
+  const [ConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false)
+
+  const loadDynamicHeader = async (data) => {
+    if (data.length > 0) {
+      const dynamicHeaders = Object.keys(data[0]).map(key => ({
+        key,
+        title: key.charAt(0).toUpperCase() + key.slice(1),
+        className: 'text-gray-500'
+      }));
+      setHeaders(dynamicHeaders);
+    }
+  }
 
   useEffect(() => {
     setempleados(mockEmpleados)
     setoficinas(mockOficinas)
     setroles(mockRoles)
+    loadDynamicHeader(mockEmpleados)
   }, [])
 
+  const handleEditClick = (employee) => {
+    setSelectedEmployee(employee);
+    setEditModalVisible(true);
+  };
 
+  const handleViewClick = (employee) => {
+    setSelectedEmployee(employee);
+    setViewModalVisible(true);
+  };
+
+  const handleDeleteClick = async (employee) => {
+    setSelectedEmployee(employee);
+    const data = await getAllEmpleados();
+    setempleados(data);
+    setConfirmDeleteVisible(true);
+  };
 
 
   return (
@@ -80,10 +113,20 @@ export default function EmpleadosPage() {
           <button onClick={() => setVistaCrearEmpleado(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
-
+          <Table
+            data={mockEmpleados}
+            headers={headers}
+            notShow={false}
+            onEdit={handleEditClick}
+            onView={handleViewClick}
+            onDelete={handleDeleteClick}
+          />
         </div>
       </div>
       <CrearNuevoEmpleado empleados={empleados} oficinas={oficinas} roles={roles} onClose={() => setVistaCrearEmpleado(false)} show={vistaCrearEmpleado} />
+      <EditarEmpleado show={EditModalVisible} onClose={() => setEditModalVisible(false)} />
+      <VerEmpleado show={ViewModalVisible} onClose={() => setViewModalVisible(false)} />
+      <EliminarEmpleado show={ConfirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} />
     </>
   )
 }
@@ -151,4 +194,44 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados }) {
       </div>
     </>
   )
+}
+function EditarEmpleado({ show, onClose, empleado }) {
+  if (!show) return null;
+  return (
+    <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
+        <div className='w-full flex justify-between items-center gap-5'>
+          <h2>Informacion del empleado</h2>
+          <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+function VerEmpleado({ show, onClose, empleado }) {
+  if (!show) return null;
+  return (
+    <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
+        <div className='w-full flex justify-between items-center gap-5'>
+          <h2>Editar empleado</h2>
+          <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EliminarEmpleado({ show, onClose, empleado }) {
+  if (!show) return null;
+  return (
+    <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
+      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
+        <div className='w-full flex justify-between items-center gap-5'>
+          <h2>Eliminar empleado</h2>
+          <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
+        </div>
+      </div>
+    </div>
+  );
 }

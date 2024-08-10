@@ -2,6 +2,21 @@
 import { useState, useEffect } from 'react'
 import axios from '../../utils/axios/ConfigAxios'
 import Table from '../../components/common/Table/Table'
+import { handleErrors } from '../../utils/HandleErrors/HandleErrors'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+  }
+});
+
 
 const mockRoles = [
   { id: 1, rol: 'Gerente' },
@@ -87,6 +102,7 @@ export default function EmpleadosPage() {
     loadDynamicHeader(mockEmpleados)
   }, [])
 
+
   const handleEditClick = (employee) => {
     setSelectedEmployee(employee);
     setEditModalVisible(true);
@@ -104,6 +120,54 @@ export default function EmpleadosPage() {
     setConfirmDeleteVisible(true);
   };
 
+
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    telefono: '',
+    puesto: '',
+    rol_id: '',
+    oficina_id: '',
+    jefe_id: ''
+  })
+
+
+  const handleChange = (e) => {
+
+    const { name, value } = e.target
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
+
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const payload = {
+      primerNombre: formData.first_name,
+      primerApellido: formData.last_name,
+      email: formData.email,
+      telefono: formData.telefono,
+      rol: formData.puesto,
+      oficina: formData.rol_id,
+      jefe: formData.oficina_id
+    }
+    console.log(payload);
+    try {
+      const url = '/admin/empleado/crear'
+      const response = await axios.post(url, payload)
+      if (response.status === 404) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Empleado registrado exitosamente!',
+          confirmButtonText: 'OK',
+      });
+      }
+    } catch (error) {
+      handleErrors(error)
+    }
+
+
+  }
 
   return (
     <>
@@ -123,7 +187,7 @@ export default function EmpleadosPage() {
           />
         </div>
       </div>
-      <CrearNuevoEmpleado empleados={empleados} oficinas={oficinas} roles={roles} onClose={() => setVistaCrearEmpleado(false)} show={vistaCrearEmpleado} />
+      <CrearNuevoEmpleado empleados={empleados} handleSubmit={handleSubmit} oficinas={oficinas} roles={roles} onClose={() => setVistaCrearEmpleado(false)} show={vistaCrearEmpleado} handleChange={handleChange} />
       <EditarEmpleado show={EditModalVisible} onClose={() => setEditModalVisible(false)} />
       <VerEmpleado show={ViewModalVisible} onClose={() => setViewModalVisible(false)} />
       <EliminarEmpleado show={ConfirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} />
@@ -133,7 +197,7 @@ export default function EmpleadosPage() {
 
 
 
-function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados }) {
+function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleSubmit, handleChange }) {
   if (!show) return null
   return (
     <>
@@ -143,53 +207,59 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados }) {
             <h2> Registrar nuevo empleado </h2>
             <button onClick={onClose}><box-icon className='text-my-5 4xl flex justify-center items-center' name='x-circle'></box-icon></button>
           </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Primer nombre</label>
-            <input type="text" name='first_name' />
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Primer apelldio</label>
-            <input type="text" name='last_name' />
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Correo electronico </label>
-            <input type="text" name='email' />
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor="">  Puesto </label>
-            <input type="text" name='puesto' />
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Rol </label>
-            <select name="rol_id" id="rol">
-              <option value="" disabled> Seleccionar rol</option>
-              {roles.map((rol) => (
-                <option value={rol.id}> {rol.rol} </option>
-              ))}
-            </select>
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Oficna </label>
-            <select name="oficna_id" id="oficna">
-              <option value="" disabled> Seleccionar oficna</option>
-              {oficinas.map((oficina) => (
-                <option value={oficina.id}> {oficina.nombre} </option>
-              ))}
-            </select>
-          </div>
-          <div className='flex my-5 justify-between'>
-            <label htmlFor=""> Jefe </label>
-            <select name="jefe_id" id="jefe">
-              <option value="" disabled> Seleccionar jefe</option>
-              {empleados.map((empleado) => (
-                <option value={empleado.id}> {empleado.firstName} </option>
-              ))}
+          <form onSubmit={handleSubmit}>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Primer nombre</label>
+              <input onChange={handleChange} required type="text" name='first_name' />
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Primer apelldio</label>
+              <input onChange={handleChange} required type="text" name='last_name' />
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Correo electronico </label>
+              <input onChange={handleChange} required type="email" name='email' />
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Telefono </label>
+              <input onChange={handleChange} required type="number" name='telefono' />
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor="">  Puesto </label>
+              <input onChange={handleChange} type="text" name='puesto' />
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Rol </label>
+              <select onChange={handleChange} name="rol_id" id="rol">
+                <option value="" > Seleccionar rol</option>
+                {roles.map((rol) => (
+                  <option value={rol.id}> {rol.rol} </option>
+                ))}
+              </select>
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Oficina </label>
+              <select onChange={handleChange} name="oficna_id" id="oficna">
+                <option value="" > Seleccionar oficna</option>
+                {oficinas.map((oficina) => (
+                  <option value={oficina.id}> {oficina.nombre} </option>
+                ))}
+              </select>
+            </div>
+            <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Jefe </label>
+              <select onChange={handleChange} name="jefe_id" id="jefe">
+                <option value=""> Seleccionar jefe</option>
+                {empleados.map((empleado) => (
+                  <option value={empleado.id}> {empleado.firstName} </option>
+                ))}
 
-            </select>
-          </div>
-          <div className='w-full flex justify-center'>
-            <button className='px-5 py-2 bg-blue-600 rounded-lg hover:scale-105 duration-300 hover:bg-blue-500 text-white'> Registrar empleado</button>
-          </div>
+              </select>
+            </div>
+            <div className='w-full flex justify-center'>
+              <button type='submit' className='px-5 py-2 bg-blue-600 rounded-lg hover:scale-105 duration-300 hover:bg-blue-500 text-white'> Registrar empleado</button>
+            </div>
+          </form>
         </div>
       </div>
     </>

@@ -159,7 +159,32 @@ export default function SidebarMenu() {
 
             }}
           />
+          <MenuItem
+            icon={<i className='bx bxs-buildings text-white'></i>}
+            itemText="Oficinas"
+            arrow={<i className={`bx bxs-chevron-right text-xl text-white ${isCollapsed ? 'hidden' : 'visible'}`}></i>}
+            isCollapsed={isCollapsed}
+            isSelected={selectedItem === 'oficinas'}
+            to="/home/oficinas"
+            onClick={() => {
+              handleNavigate('oficinas')
+
+            }}
+          />
+          <MenuItem
+            icon={<i className='bx bx-wallet text-white'></i>}
+            itemText="Pagos"
+            arrow={<i className={`bx bx-chevron-right text-xl text-white ${isCollapsed ? 'hidden' : 'visible'}`}></i>}
+            isCollapsed={isCollapsed}
+            isSelected={selectedItem === 'pagos'}
+            to="/home/pagos"
+            onClick={() => {
+              handleNavigate('pagos')
+
+            }}
+          />
         </div>
+            
         <div className='flex justify-between items-center self-end text-white m-5 rounded-lg p-3 font-bold'>
           {!isCollapsed && (
             <Button

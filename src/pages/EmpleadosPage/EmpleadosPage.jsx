@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from '../../utils/axios/ConfigAxios'
 import Table from '../../components/common/Table/Table'
 import { handleErrors } from '../../utils/HandleErrors/HandleErrors'
+import { ModalEditar } from '../../components/ModalEditar/ModalEditar'
 import Swal from 'sweetalert2'
 
 const Toast = Swal.mixin({
@@ -12,35 +13,23 @@ const Toast = Swal.mixin({
   timer: 3000,
   timerProgressBar: true,
   didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
   }
 });
-
 
 const mockRoles = [
   { id: 1, rol: 'Gerente' },
   { id: 2, rol: 'Cajero' },
   { id: 3, rol: 'Conductor' },
 ]
-const getAllRoles = async () => {
-  try {
-    const url = 'admin/rol/getAll'
-    const response = await axios.get(url)
-    if (response.data == 200) {
-      return response.data
-    }
-    return []
-  } catch (error) {
-    return []
-  }
-}
 
 const mockOficinas = [
   { id: 1, nombre: 'Exito La Rosita' },
   { id: 2, nombre: 'Exito Cacique C.C.' },
   { id: 3, nombre: 'Exito Cañaveral C.C.' },
 ]
+
 const getAllOficinas = async () => {
   try {
     const url = '/admin/oficina/getAll'
@@ -55,9 +44,9 @@ const getAllOficinas = async () => {
 }
 const mockEmpleados = [
   { id: 1, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 1, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 1, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 1, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' }
+  { id: 2, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
+  { id: 3, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
+  { id: 4, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' }
 ]
 const getAllEmpleados = async () => {
   try {
@@ -83,7 +72,6 @@ export default function EmpleadosPage() {
   const [EditModalVisible, setEditModalVisible] = useState(false)
   const [ViewModalVisible, setViewModalVisible] = useState(false)
   const [ConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false)
-
   const loadDynamicHeader = async (data) => {
     if (data.length > 0) {
       const dynamicHeaders = Object.keys(data[0]).map(key => ({
@@ -94,16 +82,15 @@ export default function EmpleadosPage() {
       setHeaders(dynamicHeaders);
     }
   }
-
   useEffect(() => {
     setempleados(mockEmpleados)
     setoficinas(mockOficinas)
     setroles(mockRoles)
     loadDynamicHeader(mockEmpleados)
   }, [])
-
-
+  
   const handleEditClick = (employee) => {
+
     setSelectedEmployee(employee);
     setEditModalVisible(true);
   };
@@ -120,7 +107,6 @@ export default function EmpleadosPage() {
     setConfirmDeleteVisible(true);
   };
 
-
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -132,13 +118,12 @@ export default function EmpleadosPage() {
     jefe_id: ''
   })
 
-
   const handleChange = (e) => {
 
     const { name, value } = e.target
     setFormData((prevData) => ({ ...prevData, [name]: value }))
 
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -160,7 +145,7 @@ export default function EmpleadosPage() {
           icon: 'success',
           title: 'Empleado registrado exitosamente!',
           confirmButtonText: 'OK',
-      });
+        });
       }
     } catch (error) {
       handleErrors(error)
@@ -168,6 +153,29 @@ export default function EmpleadosPage() {
 
 
   }
+
+  const handleEditSave = async (updatedEmployee) => {
+    const url = `/admin/empleado/update/${updatedEmployee.id}`
+    const payload = updatedEmployee
+    console.log(payload);
+    
+    try {
+      const response = await axios.put(url, payload)
+      if (response.status === 200) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Empleado actualizado exitosamente!',
+          confirmButtonText: 'OK',
+        });
+      }
+
+    } catch (error) {
+      handleErrors(error)
+    }
+    setEditModalVisible(false);
+
+  };
+  
 
   return (
     <>
@@ -187,15 +195,35 @@ export default function EmpleadosPage() {
           />
         </div>
       </div>
-      <CrearNuevoEmpleado empleados={empleados} handleSubmit={handleSubmit} oficinas={oficinas} roles={roles} onClose={() => setVistaCrearEmpleado(false)} show={vistaCrearEmpleado} handleChange={handleChange} />
-      <EditarEmpleado show={EditModalVisible} onClose={() => setEditModalVisible(false)} />
-      <VerEmpleado show={ViewModalVisible} onClose={() => setViewModalVisible(false)} />
-      <EliminarEmpleado show={ConfirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} />
+      <CrearNuevoEmpleado
+        empleados={empleados}
+        handleSubmit={handleSubmit}
+        oficinas={oficinas}
+        roles={roles}
+        onClose={() => setVistaCrearEmpleado(false)}
+        show={vistaCrearEmpleado}
+        handleChange={handleChange} />
+        <ModalEditar 
+        entidad={'Empleado'} 
+        objecto={selectedEmployee} 
+        onClose={() => setEditModalVisible(false)} 
+        show={EditModalVisible} 
+        onSave={handleEditSave}/>
+      {/* <EditarEmpleado
+        show={EditModalVisible}
+        handleSubmit={handleEditSave}
+        handleChange={handleChange}
+        empleado={selectedEmployee}
+        onClose={() => setEditModalVisible(false)} /> */}
+      <VerEmpleado
+        show={ViewModalVisible}
+        onClose={() => setViewModalVisible(false)} />
+      <EliminarEmpleado
+        show={ConfirmDeleteVisible}
+        onClose={() => setConfirmDeleteVisible(false)} />
     </>
   )
 }
-
-
 
 function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleSubmit, handleChange }) {
   if (!show) return null
@@ -265,15 +293,31 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
     </>
   )
 }
-function EditarEmpleado({ show, onClose, empleado }) {
+
+
+
+
+function EditarEmpleado({ show, onClose, empleado, handleSubmit, handleChange }) {
   if (!show) return null;
+
   return (
     <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
         <div className='w-full flex justify-between items-center gap-5'>
-          <h2>Informacion del empleado</h2>
+          <h2 className='text-xl font-medium'>Editar del empleado</h2>
           <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
         </div>
+        <form onSubmit={handleSubmit}>
+          {Object.entries(empleado)?.map(([key, value]) => (
+            <div className='flex justify-between py-2'>
+              <label htmlFor={key}>{key}</label>
+              <input onChange={handleChange} className='rounded-lg' type="text" placeholder={value} id={key} key={key} />
+            </div>
+          ))}
+          <div className='w-full flex justify-center mt-5'>
+            <button type='submit' className='px-5 py-3 bg-blue-600 rounded-lg font-medium text-white'> Actualizar </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -291,7 +335,6 @@ function VerEmpleado({ show, onClose, empleado }) {
     </div>
   );
 }
-
 function EliminarEmpleado({ show, onClose, empleado }) {
   if (!show) return null;
   return (

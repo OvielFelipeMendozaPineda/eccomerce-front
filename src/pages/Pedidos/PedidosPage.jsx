@@ -362,7 +362,7 @@ export default function PedidosPage() {
           </div>
         </div>
       )}
-      <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
+      <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Pedido"} />
       <ViewOrderDetails object={selectedOrder} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm} />
     </>

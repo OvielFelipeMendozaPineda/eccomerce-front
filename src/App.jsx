@@ -12,6 +12,8 @@ import Ecommerce from './components/ecommerce/Ecommerce';
 import CustomerPage from './pages/CustomerPage/CustomerPage';
 import PedidosPage from './pages/Pedidos/PedidosPage';
 import EmpleadosPage from './pages/EmpleadosPage/EmpleadosPage';
+import OficinasPage from './pages/OficinasPage/OficinasPage';
+import PagosPage from './pages/PagosPage/PagosPage';
 
 
 const App = () => (
@@ -27,9 +29,9 @@ const App = () => (
                         <Route path='productos' element={<ProductsPage />} />
                         <Route path='orders' element={<PedidosPage />} />
                         <Route path='employees' element={<EmpleadosPage />} />
-                        <Route path='customers' element={<CustomerPage />} >
-
-                        </Route>
+                        <Route path='customers' element={<CustomerPage />} />
+                        <Route path='oficinas' element={<OficinasPage />} />
+                        <Route path='pagos' element={<PagosPage />} />
                     </Route>
                 </Route>
                 <Route path='*' element={<NotFound />} />

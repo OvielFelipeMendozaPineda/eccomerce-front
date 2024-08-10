@@ -21,45 +21,17 @@ const Toast = Swal.mixin({
 const rolesArr = [
   'EMPLEADO', 'CAJERO', 'GERENTE', 'ADMINISTRADOR', 'SUPERVISOR', 'VENDEDOR'
 ]
-
 // const mockOficinas = [
 //   { id: 1, nombre: 'Exito La Rosita' },
 //   { id: 2, nombre: 'Exito Cacique C.C.' },
 //   { id: 3, nombre: 'Exito Cañaveral C.C.' },
 // ]
 
-const getAllOficinas = async () => {
-  try {
-    const url = '/admin/oficinas/getAll'
-    const response = await axios.get(url)
-    return response
-  } catch (error) {
-    return []
-  }
-}
-const getAllTerceros = async () => {
-  try {
-    const url = '/admin/tercero/getAll'
-    const response = await axios.get(url)
-    return response.data || []
-
-  } catch (error) {
-    return []
-  }
-}
 const mockEmpleados = [
   { id: 1, firstName: 'Felipe', lastName: 'Mendoza', email: 'oviel@gmail.com', telefono: 3165880800, oficina: 1, rol: 1, puesto: 'No se...por ahi', jefe: 1 },
 
 ]
-const getAllEmpleados = async () => {
-  try {
-    const url = '/admin/empleados/getAll'
-    const response = await axios.get(url)
-    return response
-  } catch (error) {
-    return []
-  }
-}
+
 
 
 export default function EmpleadosPage() {
@@ -69,10 +41,12 @@ export default function EmpleadosPage() {
   const [oficinas, setOficinas] = useState([])
   const [empleados, setEmpleados] = useState([])
   const [headers, setHeaders] = useState([])
+  const [tableUpdate, setTableUpdate] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState('')
   const [EditModalVisible, setEditModalVisible] = useState(false)
   const [ViewModalVisible, setViewModalVisible] = useState(false)
   const [ConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false)
+
   const loadDynamicHeader = async (data) => {
     if (data.length > 0) {
       const dynamicHeaders = Object.keys(data[0]).map(key => ({
@@ -85,22 +59,38 @@ export default function EmpleadosPage() {
   }
 
   useEffect(() => {
-    const fetchOficinas = async () => {
-      const oficinas = await getAllOficinas()
+    const fetchData = async () => {
+      try {
+        const [oficinasRes, empleadosRes] = await Promise.all([axios.get('/admin/oficinas/getAll'),
+        axios.get('/admin/empleados/getAll')
+        ])
+        setOficinas(oficinasRes.data)
+        setEmpleados(empleadosRes.data)
+        setroles(rolesArr)
 
-      setOficinas(oficinas.data)
+      } catch (error) {
+        handleErrors(error)
+      }
     }
-    const fetchEmpleados = async () => {
-      const empleados = await getAllEmpleados()
-      setEmpleados(empleados.data)
-    }
-
-
-    fetchEmpleados()
-    fetchOficinas()
-    setroles(rolesArr)
-    loadDynamicHeader(empleados)
+    fetchData()
   }, [])
+
+
+  useEffect(() => {
+    const setHeaders = async () => {
+      await loadDynamicHeader(empleados)
+    }
+    setHeaders()
+  }, [empleados])
+
+
+  useEffect(() => {
+    const fetchNewEmpledosData = async () => {
+      const response = await axios.get('/admin/empleados/getAll')
+      setEmpleados(response.data)
+    }
+    fetchNewEmpledosData()
+  }, [tableUpdate])
 
   const handleEditClick = (employee) => {
 
@@ -123,11 +113,14 @@ export default function EmpleadosPage() {
 
   const handleDeleteConfirm = async (employee) => {
     try {
-      const url = `admin/empleados/${employee.id}`
-      const response = await axios.delete(url)
+      const url = `/admin/empleados/delete?id=${employee.id}`
+      const response = await axios.get(url)
       setEmpleados(response.data);
-    } catch (error) {
+      setTableUpdate(true)
+      setConfirmDeleteVisible(false)
 
+    } catch (error) {
+      handleErrors(error)
     }
 
   }
@@ -163,7 +156,6 @@ export default function EmpleadosPage() {
       oficina: formData.oficina_id,
       jefe: formData.jefe_id
     }
-    console.log(payload);
     try {
       const url = '/admin/empleados/crear'
 
@@ -184,6 +176,7 @@ export default function EmpleadosPage() {
 
   const handleEditSave = async (updatedEmployee) => {
     const url = `/admin/empleados/update/${updatedEmployee.id}`
+    
     const payload = {
       primerNombre: updatedEmployee.firstName,
       primerApellido: updatedEmployee.lastName,

@@ -30,7 +30,19 @@ const rolesArr = [
 
 const getAllOficinas = async () => {
   try {
-    const url = '/admin/oficina/getAll'
+    const url = '/admin/oficinas/getAll'
+    const response = await axios.get(url)
+    if (response.data == 200) {
+      return response.data || []
+    }
+    return []
+  } catch (error) {
+    return []
+  }
+}
+const getAllTerceros = async () => {
+  try {
+    const url = '/admin/tercero/getAll'
     const response = await axios.get(url)
     if (response.data == 200) {
       return response.data || []
@@ -46,7 +58,7 @@ const mockEmpleados = [
 ]
 const getAllEmpleados = async () => {
   try {
-    const url = '/admin/empleado/getAll'
+    const url = '/admin/empleados/getAll'
     const response = await axios.get(url)
     if (response.data == 200) {
       return response.data
@@ -61,6 +73,7 @@ const getAllEmpleados = async () => {
 export default function EmpleadosPage() {
   const [vistaCrearEmpleado, setVistaCrearEmpleado] = useState(false)
   const [roles, setroles] = useState([])
+  const [terceros, setTerceros] = useState([])
   const [oficinas, setoficinas] = useState([])
   const [empleados, setempleados] = useState([])
   const [headers, setHeaders] = useState([])
@@ -88,6 +101,7 @@ export default function EmpleadosPage() {
       const empleados = await getAllEmpleados()
       setempleados(empleados)
     }
+    
 
     fetchEmpleados()
     fetchOficinas()
@@ -116,7 +130,7 @@ export default function EmpleadosPage() {
 
   const handleDeleteConfirm =  async (employee) => {
     try {
-      const url = `admin/empleado/${employee.id}`
+      const url = `admin/empleados/${employee.id}`
       const response = await axios.delete(url)
     } catch (error) {
       
@@ -125,6 +139,7 @@ export default function EmpleadosPage() {
     setempleados(data);
   }
   const [formData, setFormData] = useState({
+    id: '',
     first_name: '',
     last_name: '',
     email: '',
@@ -145,17 +160,19 @@ export default function EmpleadosPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const payload = {
+      id: formData.id,  
       primerNombre: formData.first_name,
       primerApellido: formData.last_name,
       email: formData.email,
       telefono: formData.telefono,
-      rol: formData.puesto,
-      oficina: formData.rol_id,
-      jefe: formData.oficina_id
+      puesto: formData.puesto,
+      rol: formData.rol_id,
+      oficina: formData.oficina_id,
+      jefe: formData.jefe_id
     }
     console.log(payload);
     try {
-      const url = '/admin/empleado/crear'
+      const url = '/admin/empleados/crear'
       const response = await axios.post(url, payload)
       if (response.status === 404) {
         Toast.fire({
@@ -172,7 +189,7 @@ export default function EmpleadosPage() {
   }
 
   const handleEditSave = async (updatedEmployee) => {
-    const url = `/admin/empleado/update/${updatedEmployee.id}`
+    const url = `/admin/empleados/update/${updatedEmployee.id}`
     const payload = {
       primerNombre: updatedEmployee.firstName,
       primerApellido: updatedEmployee.lastName,
@@ -263,6 +280,10 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
           </div>
           <form onSubmit={handleSubmit}>
             <div className='flex my-5 justify-between'>
+              <label htmlFor=""> Identificación</label>
+              <input onChange={handleChange} required type="text" name='id' />
+            </div>
+            <div className='flex my-5 justify-between'>
               <label htmlFor=""> Primer nombre</label>
               <input onChange={handleChange} required type="text" name='first_name' />
             </div>
@@ -304,9 +325,13 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
               <label htmlFor=""> Jefe </label>
               <select onChange={handleChange} name="jefe_id" id="jefe">
                 <option value=""> Seleccionar jefe</option>
-                {empleados.map((empleado) => (
-                  <option value={empleado.id}> {empleado.firstName} </option>
-                ))}
+                {empleados.map((empleado) => {
+                  if (empleado.id === 1) {
+                    return null
+                  } else {
+                    return <option value={empleado.id}> {empleado.firstName} </option>
+                  }
+                })}
 
               </select>
             </div>

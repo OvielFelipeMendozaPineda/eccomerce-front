@@ -32,10 +32,7 @@ const getAllOficinas = async () => {
   try {
     const url = '/admin/oficinas/getAll'
     const response = await axios.get(url)
-    if (response.data == 200) {
-      return response.data || []
-    }
-    return []
+    return response
   } catch (error) {
     return []
   }
@@ -44,10 +41,8 @@ const getAllTerceros = async () => {
   try {
     const url = '/admin/tercero/getAll'
     const response = await axios.get(url)
-    if (response.data == 200) {
-      return response.data || []
-    }
-    return []
+    return response.data || []
+
   } catch (error) {
     return []
   }
@@ -60,10 +55,7 @@ const getAllEmpleados = async () => {
   try {
     const url = '/admin/empleados/getAll'
     const response = await axios.get(url)
-    if (response.data == 200) {
-      return response.data
-    }
-    return []
+    return response
   } catch (error) {
     return []
   }
@@ -74,8 +66,8 @@ export default function EmpleadosPage() {
   const [vistaCrearEmpleado, setVistaCrearEmpleado] = useState(false)
   const [roles, setroles] = useState([])
   const [terceros, setTerceros] = useState([])
-  const [oficinas, setoficinas] = useState([])
-  const [empleados, setempleados] = useState([])
+  const [oficinas, setOficinas] = useState([])
+  const [empleados, setEmpleados] = useState([])
   const [headers, setHeaders] = useState([])
   const [selectedEmployee, setSelectedEmployee] = useState('')
   const [EditModalVisible, setEditModalVisible] = useState(false)
@@ -94,14 +86,15 @@ export default function EmpleadosPage() {
 
   useEffect(() => {
     const fetchOficinas = async () => {
-      const ofcinas = await getAllOficinas()
-      setoficinas(ofcinas)
+      const oficinas = await getAllOficinas()
+
+      setOficinas(oficinas.data)
     }
     const fetchEmpleados = async () => {
       const empleados = await getAllEmpleados()
-      setempleados(empleados)
+      setEmpleados(empleados.data)
     }
-    
+
 
     fetchEmpleados()
     fetchOficinas()
@@ -122,21 +115,21 @@ export default function EmpleadosPage() {
 
   const handleDeleteClick = (employee) => {
 
-    
+
     setSelectedEmployee(employee);
     setConfirmDeleteVisible(true);
 
   };
 
-  const handleDeleteConfirm =  async (employee) => {
+  const handleDeleteConfirm = async (employee) => {
     try {
       const url = `admin/empleados/${employee.id}`
       const response = await axios.delete(url)
+      setEmpleados(response.data);
     } catch (error) {
-      
+
     }
-    const data = await getAllEmpleados();
-    setempleados(data);
+
   }
   const [formData, setFormData] = useState({
     id: '',
@@ -160,7 +153,7 @@ export default function EmpleadosPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const payload = {
-      id: formData.id,  
+      id: formData.id,
       primerNombre: formData.first_name,
       primerApellido: formData.last_name,
       email: formData.email,
@@ -173,8 +166,9 @@ export default function EmpleadosPage() {
     console.log(payload);
     try {
       const url = '/admin/empleados/crear'
+
       const response = await axios.post(url, payload)
-      if (response.status === 404) {
+      if (response.status === 200) {
         Toast.fire({
           icon: 'success',
           title: 'Empleado registrado exitosamente!',
@@ -255,15 +249,15 @@ export default function EmpleadosPage() {
 
       <VerEmpleado
         show={ViewModalVisible}
-        onClose={() => setViewModalVisible(false)} 
+        onClose={() => setViewModalVisible(false)}
         empleado={selectedEmployee}
-        />
+      />
       <EliminarEmpleado
         show={ConfirmDeleteVisible}
-        onClose={() => setConfirmDeleteVisible(false)} 
+        onClose={() => setConfirmDeleteVisible(false)}
         handleClick={handleDeleteConfirm}
         empleado={selectedEmployee}
-        />
+      />
     </>
   )
 }
@@ -288,7 +282,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
               <input onChange={handleChange} required type="text" name='first_name' />
             </div>
             <div className='flex my-5 justify-between'>
-              <label htmlFor=""> Primer apelldio</label>
+              <label htmlFor=""> Primer apellido</label>
               <input onChange={handleChange} required type="text" name='last_name' />
             </div>
             <div className='flex my-5 justify-between'>
@@ -314,7 +308,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
             </div>
             <div className='flex my-5 justify-between'>
               <label htmlFor=""> Oficina </label>
-              <select onChange={handleChange} name="oficna_id" id="oficna">
+              <select onChange={handleChange} name="oficina_id" id="oficina">
                 <option value="" > Seleccionar oficna</option>
                 {oficinas.map((oficina) => (
                   <option value={oficina.id}> {oficina.nombre} </option>
@@ -347,7 +341,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
 
 function VerEmpleado({ show, onClose, empleado }) {
   if (!show) return null;
-  
+
   return (
     <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
@@ -355,10 +349,11 @@ function VerEmpleado({ show, onClose, empleado }) {
           <h2>Editar empleado</h2>
           <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
         </div>
+        {console.log(empleado)}
         {Object.entries(empleado)?.map(([key, value]) => (
           <div className='flex justify-between'>
-            <label htmlFor={key}> { key } </label>
-            <input type="text" disabled value={value}/>
+            <label htmlFor={key}> {key} </label>
+            <input type="text" disabled value={value} />
           </div>
         ))}
       </div>
@@ -376,7 +371,7 @@ function EliminarEmpleado({ show, onClose, empleado, handleClick }) {
         </div>
         <div className='w-full flex justify-around'>
           <button onClick={onClose} className=' hover:scale-110 duration-300 px-5 py-2 border-2 border-red-500 hover:bg-red-500 hover:text-white'>No</button>
-          <button onClick={ ()=>handleClick(empleado) } className=' hover:scale-105 duration-300 px-6 py-3 bg-green-500 hover:bg-green-400 text-white'>Si</button>
+          <button onClick={() => handleClick(empleado)} className=' hover:scale-105 duration-300 px-6 py-3 bg-green-500 hover:bg-green-400 text-white'>Si</button>
         </div>
       </div>
     </div>

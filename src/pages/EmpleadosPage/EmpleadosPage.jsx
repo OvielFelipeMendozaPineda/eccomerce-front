@@ -43,10 +43,8 @@ const getAllOficinas = async () => {
   }
 }
 const mockEmpleados = [
-  { id: 1, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 2, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 3, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' },
-  { id: 4, firstName: 'Felipe', lastName: 'Mendoza', oficina: 1, rol: 1, puesto: 'No se...por ahi' }
+  { id: 1, firstName: 'Felipe', lastName: 'Mendoza', email: 'oviel@gmail.com', telefono: 3165880800, oficina: 1, rol: 1, puesto: 'No se...por ahi', jefe: 1 },
+
 ]
 const getAllEmpleados = async () => {
   try {
@@ -88,7 +86,7 @@ export default function EmpleadosPage() {
     setroles(mockRoles)
     loadDynamicHeader(mockEmpleados)
   }, [])
-  
+
   const handleEditClick = (employee) => {
 
     setSelectedEmployee(employee);
@@ -156,9 +154,18 @@ export default function EmpleadosPage() {
 
   const handleEditSave = async (updatedEmployee) => {
     const url = `/admin/empleado/update/${updatedEmployee.id}`
-    const payload = updatedEmployee
+    const payload = {
+      primerNombre: updatedEmployee.firstName,
+      primerApellido: updatedEmployee.lastName,
+      email: updatedEmployee.email,
+      telefono: updatedEmployee.telefono,
+      puesto: updatedEmployee.puesto,
+      rol: updatedEmployee.rol,
+      oficina: updatedEmployee.oficina,
+      jefe: updatedEmployee.jefe
+    }
     console.log(payload);
-    
+
     try {
       const response = await axios.put(url, payload)
       if (response.status === 200) {
@@ -175,7 +182,7 @@ export default function EmpleadosPage() {
     setEditModalVisible(false);
 
   };
-  
+
 
   return (
     <>
@@ -203,21 +210,18 @@ export default function EmpleadosPage() {
         onClose={() => setVistaCrearEmpleado(false)}
         show={vistaCrearEmpleado}
         handleChange={handleChange} />
-        <ModalEditar 
-        entidad={'Empleado'} 
-        objecto={selectedEmployee} 
-        onClose={() => setEditModalVisible(false)} 
-        show={EditModalVisible} 
-        onSave={handleEditSave}/>
-      {/* <EditarEmpleado
+      <ModalEditar
+        entidad={'Empleado'}
+        objecto={selectedEmployee}
+        onClose={() => setEditModalVisible(false)}
         show={EditModalVisible}
-        handleSubmit={handleEditSave}
-        handleChange={handleChange}
-        empleado={selectedEmployee}
-        onClose={() => setEditModalVisible(false)} /> */}
+        onSave={handleEditSave} />
+
       <VerEmpleado
         show={ViewModalVisible}
-        onClose={() => setViewModalVisible(false)} />
+        onClose={() => setViewModalVisible(false)} 
+        empleado={selectedEmployee}
+        />
       <EliminarEmpleado
         show={ConfirmDeleteVisible}
         onClose={() => setConfirmDeleteVisible(false)} />
@@ -294,36 +298,9 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
   )
 }
 
-
-
-
-function EditarEmpleado({ show, onClose, empleado, handleSubmit, handleChange }) {
-  if (!show) return null;
-
-  return (
-    <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
-      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
-        <div className='w-full flex justify-between items-center gap-5'>
-          <h2 className='text-xl font-medium'>Editar del empleado</h2>
-          <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          {Object.entries(empleado)?.map(([key, value]) => (
-            <div className='flex justify-between py-2'>
-              <label htmlFor={key}>{key}</label>
-              <input onChange={handleChange} className='rounded-lg' type="text" placeholder={value} id={key} key={key} />
-            </div>
-          ))}
-          <div className='w-full flex justify-center mt-5'>
-            <button type='submit' className='px-5 py-3 bg-blue-600 rounded-lg font-medium text-white'> Actualizar </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 function VerEmpleado({ show, onClose, empleado }) {
   if (!show) return null;
+  
   return (
     <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
@@ -331,6 +308,12 @@ function VerEmpleado({ show, onClose, empleado }) {
           <h2>Editar empleado</h2>
           <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
         </div>
+        {Object.entries(empleado)?.map(([key, value]) => (
+          <div className='flex justify-between'>
+            <label htmlFor={key}> { key } </label>
+            <input type="text" disabled value={value}/>
+          </div>
+        ))}
       </div>
     </div>
   );

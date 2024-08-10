@@ -18,24 +18,22 @@ const Toast = Swal.mixin({
   }
 });
 
-const mockRoles = [
-  { id: 1, rol: 'Gerente' },
-  { id: 2, rol: 'Cajero' },
-  { id: 3, rol: 'Conductor' },
+const rolesArr = [
+  'EMPLEADO', 'CAJERO', 'GERENTE', 'ADMINISTRADOR', 'SUPERVISOR', 'VENDEDOR'
 ]
 
-const mockOficinas = [
-  { id: 1, nombre: 'Exito La Rosita' },
-  { id: 2, nombre: 'Exito Cacique C.C.' },
-  { id: 3, nombre: 'Exito Cañaveral C.C.' },
-]
+// const mockOficinas = [
+//   { id: 1, nombre: 'Exito La Rosita' },
+//   { id: 2, nombre: 'Exito Cacique C.C.' },
+//   { id: 3, nombre: 'Exito Cañaveral C.C.' },
+// ]
 
 const getAllOficinas = async () => {
   try {
     const url = '/admin/oficina/getAll'
     const response = await axios.get(url)
     if (response.data == 200) {
-      return response.data
+      return response.data || []
     }
     return []
   } catch (error) {
@@ -80,11 +78,21 @@ export default function EmpleadosPage() {
       setHeaders(dynamicHeaders);
     }
   }
+
   useEffect(() => {
-    setempleados(mockEmpleados)
-    setoficinas(mockOficinas)
-    setroles(mockRoles)
-    loadDynamicHeader(mockEmpleados)
+    const fetchOficinas = async () => {
+      const ofcinas = await getAllOficinas()
+      setoficinas(ofcinas)
+    }
+    const fetchEmpleados = async () => {
+      const empleados = await getAllEmpleados()
+      setempleados(empleados)
+    }
+
+    fetchEmpleados()
+    fetchOficinas()
+    setroles(rolesArr)
+    loadDynamicHeader(empleados)
   }, [])
 
   const handleEditClick = (employee) => {
@@ -204,7 +212,7 @@ export default function EmpleadosPage() {
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table
-            data={mockEmpleados}
+            data={empleados}
             headers={headers}
             notShow={false}
             onEdit={handleEditClick}
@@ -279,7 +287,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
               <select onChange={handleChange} name="rol_id" id="rol">
                 <option value="" > Seleccionar rol</option>
                 {roles.map((rol) => (
-                  <option value={rol.id}> {rol.rol} </option>
+                  <option value={rol}> {rol} </option>
                 ))}
               </select>
             </div>

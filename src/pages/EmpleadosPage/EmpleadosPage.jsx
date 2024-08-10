@@ -61,11 +61,18 @@ export default function EmpleadosPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [oficinasRes, empleadosRes] = await Promise.all([axios.get('/admin/oficinas/getAll'),
-        axios.get('/admin/empleados/getAll')
-        ])
-        setOficinas(oficinasRes.data)
-        setEmpleados(empleadosRes.data)
+        const [oficinasRes, empleadosRes] = await Promise.all(
+          [
+            axios.get('/admin/oficinas/getAll'),
+            axios.get('/admin/empleados/getAll')
+          ]
+        )
+        setOficinas(
+          { id: 1, nombre: 'Exito La Rosita' },
+          { id: 2, nombre: 'Exito Cacique C.C.' },
+          { id: 3, nombre: 'Exito Cañaveral C.C.' },
+        )
+        setEmpleados(empleadosRes.data || [])
         setroles(rolesArr)
 
       } catch (error) {
@@ -176,7 +183,7 @@ export default function EmpleadosPage() {
 
   const handleEditSave = async (updatedEmployee) => {
     const url = `/admin/empleados/update/${updatedEmployee.id}`
-    
+
     const payload = {
       primerNombre: updatedEmployee.firstName,
       primerApellido: updatedEmployee.lastName,
@@ -212,6 +219,14 @@ export default function EmpleadosPage() {
       <div className='flex flex-col w-full gap-5 h-screen'>
         <div><h2 className='text-2xl'>Gestión de Empleados</h2></div>
         <div className='w-full flex justify-center'>
+          <div>
+            <label>Filtrar por oficina</label>
+            <select>
+              {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
+                <option key={oficina.id} value={oficina.id}> {oficina.nombre} </option>
+              ))}
+            </select>
+          </div>
           <button onClick={() => setVistaCrearEmpleado(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">

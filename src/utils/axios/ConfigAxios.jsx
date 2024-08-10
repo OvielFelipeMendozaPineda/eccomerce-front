@@ -9,7 +9,7 @@ instance.interceptors.request.use((config) => {
 
   if (token) {
     console.log(token);
-    
+
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;

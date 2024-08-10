@@ -76,7 +76,7 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => {
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
+            {Array.isArray(data) && data.length > 0 ? (
               data.map((row, rowIndex) => (
                 <tr key={rowIndex} className="border-t border-t-[#d0dbe6]">
                   {headers.map((header, colIndex) => (

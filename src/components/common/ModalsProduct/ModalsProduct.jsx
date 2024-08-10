@@ -2,55 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Button from '../Button/Button';
 
 
-const EditProductModal = ({ objecto, show, onClose, onSave, entidad }) => {
-  const [formData, setFormData] = useState({ ...objecto });
-
-  useEffect(() => {
-    if (objecto) {
-      setFormData({ ...objecto });
-    }
-  }, [objecto]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  if (!show) return null;
-
-  return (
-    <div className="modal absolute inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
-      <div className="bg-gray-50 p-5 rounded-lg">
-        <div className="header p-3 flex justify-between items-center">
-          <h2 className="text-2xl font-medium">Editar {entidad}</h2>
-          <Button children={<box-icon className='text-4xl' name='x-circle'></box-icon>} id='close-edit-object-btn' onClick={onClose} type='button' className='text-gray-500 hover:text-gray-700' />
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {Object.entries(formData)
-            .filter(([key]) => key !== 'id')
-            .map(([key, value]) => (
-              <label key={key} className="flex flex-col">
-                {key.charAt(0).toUpperCase() + key.slice(1)}:
-                <input
-                  type="text"
-                  name={key}
-                  value={value != null ? value : ''}
-                  onChange={handleChange}
-                  className="rounded-lg p-2 w-full border border-gray-300"
-                />
-              </label>
-            ))}
-          <button type="submit" className="bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700">Guardar</button>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 const ViewProductModal = ({ product, show, onClose }) => {
   if (!show) return null;
@@ -112,4 +63,4 @@ const ConfirmDeleteModal = ({ show, onClose, onConfirm }) => {
   );
 };
 
-export { EditProductModal, ViewProductModal, ConfirmDeleteModal };
+export { ViewProductModal, ConfirmDeleteModal };

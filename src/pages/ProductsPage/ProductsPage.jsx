@@ -3,7 +3,7 @@ import Table from '../../components/common/Table/Table';
 import Header from '../../components/common/Header/Header';
 import SearchBar from '../../components/common/SearchBar/SearchBar';
 import Button from '../../components/common/Button/Button';
-import { EditProductModal, ViewProductModal, ConfirmDeleteModal } from '../../components/common/ModalsProduct/ModalsProduct';
+import { ViewProductModal, ConfirmDeleteModal } from '../../components/common/ModalsProduct/ModalsProduct';
 import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
 import ModalNewProduct from './ModalNewProduct';
 import axios from '../../utils/axios/ConfigAxios';
@@ -146,8 +146,8 @@ export default function ProductsPage() {
         </div>
       </div>
       <ModalNewProduct show={showModal} handleModal={handleModal} />
-      {/* <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} /> */}
-      <EditProductModal objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} />
+      <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
+      {/* <EditProductModal objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} /> */}
       <ViewProductModal product={selectedProduct} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <ConfirmDeleteModal show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>

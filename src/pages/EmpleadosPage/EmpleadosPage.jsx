@@ -32,7 +32,7 @@ const getAllOficinas = async () => {
   try {
     const url = '/admin/oficinas/getAll'
     const response = await axios.get(url)
-    return response.data
+    return response
   } catch (error) {
     return []
   }
@@ -41,10 +41,8 @@ const getAllTerceros = async () => {
   try {
     const url = '/admin/tercero/getAll'
     const response = await axios.get(url)
-    if (response.data == 200) {
-      return response.data || []
-    }
-    return []
+    return response.data || []
+
   } catch (error) {
     return []
   }
@@ -57,7 +55,7 @@ const getAllEmpleados = async () => {
   try {
     const url = '/admin/empleados/getAll'
     const response = await axios.get(url)
-    return response.data
+    return response
   } catch (error) {
     return []
   }
@@ -90,11 +88,11 @@ export default function EmpleadosPage() {
     const fetchOficinas = async () => {
       const oficinas = await getAllOficinas()
 
-      setOficinas(oficinas)
+      setOficinas(oficinas.data)
     }
     const fetchEmpleados = async () => {
       const empleados = await getAllEmpleados()
-      setEmpleados(empleados)
+      setEmpleados(empleados.data)
     }
 
 

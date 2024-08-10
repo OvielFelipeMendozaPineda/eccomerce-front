@@ -3,7 +3,7 @@ import Button from '../common/Button/Button';
 import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
 
-export default function EliminarCliente({ customer, show, handleModal, }) {
+export default function EliminarCliente({ customer, show, handleModal, fetchClientes, }) {
     const [isVisible, setIsVisible] = useState(show);
     const [formData, setformData] = useState(customer);
     const [loading, setLoading] = useState(true);
@@ -42,12 +42,14 @@ export default function EliminarCliente({ customer, show, handleModal, }) {
     };
 
     const handleSubmit = async () => {
-        console.log(customer.id);
         try {
             const URL = `/admin/cliente/deleteCliente?id=${customer.id}`;
             const response = await axios.delete(URL);
             if (response.status === 200) {
                 Swal.fire('Success', 'Cliente eliminado con éxito', 'success');
+                setIsVisible(false)
+                handleModal(false);
+                fetchClientes()
             }
         } catch (error) {
             Swal.fire('Error', 'No se pudo eliminar el cliente.', 'error');

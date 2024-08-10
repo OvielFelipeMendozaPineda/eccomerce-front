@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from '../../components/common/Button/Button';
 import Header from '../../components/common/Header/Header';
 import Table from '../../components/common/Table/Table';
@@ -23,26 +23,6 @@ const Toast = Swal.mixin({
     }
 });
 
-const getAllClientes = async () => {
-    try {
-        const response = await axios.get('/admin/cliente/getAll');
-        return response.data || [];
-    } catch (error) {
-        console.error('Error fetching all clients:', error);
-        return [];
-    }
-};
-
-const getClientesByCity = async (city) => {
-    try {
-        const response = await axios.get(`/admin/cliente/getAllClientesByCity?city=${city}`);
-        return response.data || [];
-    } catch (error) {
-        console.error('Error fetching clients by city:', error);
-        return [];
-    }
-};
-
 export default function CustomerPage() {
     const [city, setCity] = useState('');
     const [clientes, setClientes] = useState([]);
@@ -53,92 +33,53 @@ export default function CustomerPage() {
     const [viewModalVisible, setViewModalVisible] = useState(false);
     const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
 
-    useEffect(() => {
-        const fetchClientes = async () => {
-            const data = await getAllClientes();
+    const fetchClientes = useCallback(async () => {
+        try {
+            const endpoint = city ? `/admin/cliente/getAllClientesByCity?city=${city}` : '/admin/cliente/getAll';
+            const { data } = await axios.get(endpoint);
             setClientes(data);
 
             if (data.length > 0) {
-                const dynamicHeaders = Object.keys(data[0]).map(key => ({
+                setHeaders(Object.keys(data[0]).map(key => ({
                     key,
                     title: key.charAt(0).toUpperCase() + key.slice(1),
                     className: 'text-gray-500'
-                }));
-                setHeaders(dynamicHeaders);
+                })));
             }
-        };
-        fetchClientes();
-    }, []);
-
-    useEffect(() => {
-        const handleCitySearch = async () => {
-            if (city) {
-                const data = await getClientesByCity(city);
-                setClientes(data);
-
-                if (data.length > 0) {
-                    const dynamicHeaders = Object.keys(data[0]).map(key => ({
-                        key,
-                        title: key.charAt(0).toUpperCase() + key.slice(1),
-                        className: 'text-gray-500'
-                    }));                    
-                    setHeaders(dynamicHeaders);
-                }
-            }
-        };
-        handleCitySearch();
+        } catch (error) {
+            handleErrors(error);
+        }
     }, [city]);
 
-    const handleClick = () => {
-        setCity(document.querySelector('#city-input').value);
-    };
+    useEffect(() => {
+        fetchClientes();
 
-    const handleReset = async () => {
-        setCity('');
-        const data = await getAllClientes();
-        setClientes(data);
+    }, [fetchClientes]);
 
-        if (data.length > 0) {
-            const dynamicHeaders = Object.keys(data[0]).map(key => ({
-                key,
-                title: key.charAt(0).toUpperCase() + key.slice(1),
-                className: 'text-gray-500'
-            }));
-            setHeaders(dynamicHeaders);
-        }
-    };
+    const toggleModal = () => setShowModal(!showModal);
+    const resetCity = () => setCity('');
+    const updateCity = () => setCity(document.querySelector('#city-input').value);
 
-    const handleModal = () => {
-        setShowModal(prev => !prev);
-    };
-
-    const [formData, setFormData] = useState(
-        registerClienteFields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
-    );
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = ({ target: { name, value } }) => {
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
+    const [formData, setFormData] = useState(registerClienteFields.reduce(
+        (acc, field) => ({ ...acc, [field.name]: '' }), {}
+    ));
 
-    registerClienteFields.forEach((field) => field.onChange = handleChange);
+    registerClienteFields.forEach(field => field.onChange = handleChange);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         formData.username = formData.primerNombre + formData.id.slice(-1, 4);
-        const payload = formData;
-        console.log(payload);
-        
+
         try {
-            const URL = '/admin/cliente/newCliente';
-            const response = await axios.post(URL, payload);
+            const response = await axios.post('/admin/cliente/newCliente', formData);
             if (response.status === 201) {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Cliente registrado exitosamente!',
-                    confirmButtonText: 'OK',
-                });
+                Toast.fire({ icon: 'success', title: 'Cliente registrado exitosamente!' });
+                fetchClientes();
+                setShowModal(false)
             }
         } catch (error) {
             handleErrors(error);
@@ -155,37 +96,26 @@ export default function CustomerPage() {
         setViewModalVisible(true);
     };
 
-    const handleDeleteClick =  async(customer) => {
+    const handleDeleteClick = (customer) => {
         setSelectedCustomer(customer);
-        const data = await getAllClientes();
-        setClientes(data);
         setConfirmDeleteVisible(true);
     };
 
     const handleEditSave = async (updatedCustomer) => {
-        const payload = updatedCustomer;
-        const url = `/admin/cliente/put/${payload.id}` 
         try {
-            const url = `/admin/cliente/update/${updatedCustomer.id}`
-            const response = await axios.put(url, payload)
-            if (response.data == 200) {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Cliente actualizado exitosamente!',
-                    confirmButtonText: 'OK',
-                  });
+            const response = await axios.put(`/admin/cliente/update/${updatedCustomer.id}`, updatedCustomer);
+            if (response.status === 200) {
+                Toast.fire({ icon: 'success', title: 'Cliente actualizado exitosamente!' });
+                fetchClientes();
             }
         } catch (error) {
-            handleErrors(error)
-            
+            handleErrors(error);
         }
         setEditModalVisible(false);
-        console.log('Customer updated:', updatedCustomer);
     };
 
-    const handleDeleteConfirm = () => {
-        setConfirmDeleteVisible(false);
-    };
+
+    
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -197,7 +127,7 @@ export default function CustomerPage() {
                 children="Registrar nuevo cliente"
                 type="button"
                 className="bg-gray-200 rounded-md w-60 px-5 py-3 my-5 duration-300 hover:bg-green-500 font-medium hover:text-white hover:scale-105"
-                onClick={handleModal}
+                onClick={toggleModal}
             />
             <div className="flex justify-around items-center">
                 <div className='flex flex-row gap-2 px-5 py-3 justify-center items-center'>
@@ -213,14 +143,14 @@ export default function CustomerPage() {
                     <button
                         type="button"
                         className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-blue-600 hover:text-white"
-                        onClick={handleClick}
+                        onClick={updateCity}
                     >
                         Buscar
                     </button>
                     <button
                         type="button"
                         className="bg-gray-200 p-3 rounded-lg px-8 duration-300 hover:scale-110 hover:bg-red-600 hover:text-white"
-                        onClick={handleReset}
+                        onClick={resetCity}
                     >
                         Limpiar
                     </button>
@@ -234,7 +164,6 @@ export default function CustomerPage() {
                     onEdit={handleEditClick}
                     onView={handleViewClick}
                     onDelete={handleDeleteClick}
-
                 />
             </div>
             <Modal
@@ -243,13 +172,13 @@ export default function CustomerPage() {
                 fields={registerClienteFields}
                 dropdownFields={[]}
                 show={showModal}
-                handleModal={handleModal}
+                handleModal={toggleModal}
             />
             <ModalEditar
-                objecto={selectedCustomer} 
-                show={editModalVisible} 
+                objecto={selectedCustomer}
+                show={editModalVisible}
                 onClose={() => setEditModalVisible(false)}
-                onSave={handleEditSave} 
+                onSave={handleEditSave}
                 entidad={"Producto"}
             />
             <InformacionCliente
@@ -261,7 +190,7 @@ export default function CustomerPage() {
                 customer={selectedCustomer}
                 show={confirmDeleteVisible}
                 handleModal={() => setConfirmDeleteVisible(false)}
-                handleConfirm={handleDeleteConfirm}
+                fetchClientes={fetchClientes}
             />
         </div>
     );

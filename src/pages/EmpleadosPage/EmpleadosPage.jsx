@@ -98,13 +98,24 @@ export default function EmpleadosPage() {
     setViewModalVisible(true);
   };
 
-  const handleDeleteClick = async (employee) => {
+  const handleDeleteClick = (employee) => {
+
+    
     setSelectedEmployee(employee);
-    const data = await getAllEmpleados();
-    setempleados(data);
     setConfirmDeleteVisible(true);
+
   };
 
+  const handleDeleteConfirm =  async (employee) => {
+    try {
+      const url = `admin/empleado/${employee.id}`
+      const response = await axios.delete(url)
+    } catch (error) {
+      
+    }
+    const data = await getAllEmpleados();
+    setempleados(data);
+  }
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -224,7 +235,10 @@ export default function EmpleadosPage() {
         />
       <EliminarEmpleado
         show={ConfirmDeleteVisible}
-        onClose={() => setConfirmDeleteVisible(false)} />
+        onClose={() => setConfirmDeleteVisible(false)} 
+        handleClick={handleDeleteConfirm}
+        empleado={selectedEmployee}
+        />
     </>
   )
 }
@@ -318,14 +332,18 @@ function VerEmpleado({ show, onClose, empleado }) {
     </div>
   );
 }
-function EliminarEmpleado({ show, onClose, empleado }) {
+function EliminarEmpleado({ show, onClose, empleado, handleClick }) {
   if (!show) return null;
   return (
     <div className="absolute w-full h-full inset-0 bg-gray-400 bg-opacity-60 flex justify-center items-center animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-6 w-96">
         <div className='w-full flex justify-between items-center gap-5'>
-          <h2>Eliminar empleado</h2>
+          <h2 className='text-xl'>Eliminar empleado</h2>
           <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
+        </div>
+        <div className='w-full flex justify-around'>
+          <button onClick={onClose} className=' hover:scale-110 duration-300 px-5 py-2 border-2 border-red-500 hover:bg-red-500 hover:text-white'>No</button>
+          <button onClick={ ()=>handleClick(empleado) } className=' hover:scale-105 duration-300 px-6 py-3 bg-green-500 hover:bg-green-400 text-white'>Si</button>
         </div>
       </div>
     </div>

@@ -42,39 +42,13 @@ const getAllProductos = async () => {
   }
 };
 
-const getAllPedidos = async () => {
-  try {
-    const url = '/admin/pedido/getAll';
-    const response = await axios.get(url);
-    if (response.status === 200) {
-      return response.data || [];
-    }
-    return []
-  } catch (error) {
-    return [];
-  }
-};
-
-
-
-
-
-const getAllPedidosByEstado = async (state) => {
-  try {
-    const url = `/admin/pedido/getAllByEstado?estado=${state}`;
-    const response = await axios.get(url);
-    return response.data || [];
-  } catch (error) {
-    return [];
-  }
-};
 
 
 
 export default function PedidosPage() {
   const [headers, setHeaders] = useState([]);
   const [newPedidoView, setNewPedidoView] = useState(false);
-  const [pedidosEstado, setPedidosEstado] = useState('CREADO');
+  const [pedidosEstado, setPedidosEstado] = useState('Seleccionar estado');
   const [fechaEsperada, setfechaEsperada] = useState('');
   const [comentarios, setComentarios] = useState('');
   const [productos, setProductos] = useState([]);
@@ -86,6 +60,7 @@ export default function PedidosPage() {
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [enviado, setenviado] = useState()
+  const [isPedidosLoaded, setIsPedidosLoaded] = useState(false);
 
   const estadosEnum = [
     'CREADO',
@@ -107,41 +82,9 @@ export default function PedidosPage() {
 
 
 
-  useEffect(() => {
-    const fetchPedidos = async () => {
-      try {
-        const pedidosFetch = await getAllPedidos();
-        setPedidos(pedidosFetch);
-
-        if (pedidosFetch) {
-          const dynamicHeaders = Object.keys(pedidosFetch[0]).map((key) => ({
-            key,
-            title: key.charAt(0).toUpperCase() + key.slice(1),
-            className: 'text-gray-500'
-          }));
-          setHeaders(dynamicHeaders);
-        }
-      } catch (error) {
-        console.error('Error fetching pedidos:', error);
-      }
-    };
-
-    fetchPedidos();
 
 
-  }, [])
 
-
-  useEffect(() => {
-
-    const fetchPedidosByEstado = async () => {
-      console.log(pedidosEstado);
-
-      const pedidos = await getAllPedidosByEstado(pedidosEstado);
-      setPedidos(pedidos);
-    };
-    fetchPedidosByEstado();
-  }, [pedidosEstado]);
 
 
   const handleSelectChange = (index, event) => {
@@ -265,6 +208,63 @@ export default function PedidosPage() {
     }
     setConfirmDeleteVisible(false);
   };
+  const getAllPedidos = async () => {
+    try {
+      const url = '/admin/pedido/getAll';
+      const response = await axios.get(url);
+      if (response.status === 200) {
+        return response.data || [];
+      }
+      return []
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const getAllPedidosByEstado = async (state) => {
+    try {
+      const url = `/admin/pedido/getAllByEstado?estado=${state}`;
+      const response = await axios.get(url);
+      return response.data || [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      let pedidosFetch = [];
+      try {
+        if (pedidosEstado === 'Seleccionar estado') {
+          pedidosFetch = await getAllPedidos();
+        } else {
+          pedidosFetch = await getAllPedidosByEstado(pedidosEstado);
+        }
+        setPedidos(pedidosFetch);
+        setIsPedidosLoaded(true);
+      } catch (error) {
+        console.error('Error fetching pedidos:', error);
+      }
+    };
+
+    fetchPedidos();
+
+  }, [pedidosEstado]);
+
+  useEffect(() => {
+    if (!isPedidosLoaded) return;
+
+    if (pedidos.length === 0) {
+      setHeaders([]);
+      return;
+    }
+    const dynamicHeaders = Object.keys(pedidos[0])?.map((key) => ({
+      key,
+      title: key.charAt(0).toUpperCase() + key.slice(1),
+      className: 'text-gray-500'
+    }));
+    setHeaders(dynamicHeaders);
+  }, [pedidos, isPedidosLoaded]);
 
   const handleStatusSelectorChange = (e) => {
     setPedidosEstado(e.target.value)
@@ -280,7 +280,7 @@ export default function PedidosPage() {
         <div className='flex gap-5 items-center'>
           <label>Buscar Pedido por estado </label>
           <select onChange={handleStatusSelectorChange} className='rounded-lg focus:ring-0' name="searchByStatus" >
-            <option className='text-gray-200' disabled> Seleccionar estado </option>
+            <option className='text-gray-200'> Seleccionar estado </option>
             {estadosEnum.map(estado => (
               <option value={estado}> {estado}</option>
             ))}
@@ -448,7 +448,6 @@ function PayModal({ show, onClose }) {
   }, [])
 
 
-  console.log(metodosPago);
 
 
   if (!show) {

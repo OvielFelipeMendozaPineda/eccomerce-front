@@ -138,7 +138,7 @@ export default function PedidosPage() {
       console.log(pedidosEstado);
 
       const pedidos = await getAllPedidosByEstado(pedidosEstado);
-      setProductos(pedidos);
+      setPedidos(pedidos);
     };
     fetchPedidosByEstado();
   }, [pedidosEstado]);
@@ -448,7 +448,7 @@ function PayModal({ show, onClose }) {
   }, [])
 
 
-console.log(metodosPago);
+  console.log(metodosPago);
 
 
   if (!show) {
@@ -484,7 +484,7 @@ console.log(metodosPago);
             </label>
             <select name="" id="">
               {metodosPago.map((metodo) => (
-                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={metodo.id}>{metodo.nombre }</option>
+                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={metodo.id}>{metodo.nombre}</option>
               ))}
             </select>
           </div>

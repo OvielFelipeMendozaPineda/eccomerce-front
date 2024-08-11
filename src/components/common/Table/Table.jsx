@@ -15,7 +15,7 @@ const Toast = Swal.mixin({
   }
 });
 
-const Table = ({ data, headers, notShow, onEdit, onView, onDelete, showPayButton = false }) => {
+const Table = ({ data, headers, notShow, onEdit, onView, onDelete, onPay, showPayButton = false }) => {
 
   const handleToggleChange = async (row) => {
     const data = new FormData();
@@ -94,7 +94,7 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete, showPayButton
                   <td className=' flex justify-center gap-5'>
                     <div className="inline-flex rounded-lg border border-gray-100 gap-5 bg-gray-100 p-1">
                       {showPayButton ? (
-                        <button onClick={() => { onEdit(row) }} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm text-green-500 shadow-sm focus:relative">
+                        <button onClick={() => { onPay(row) }} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm text-green-500 shadow-sm focus:relative">
                           <box-icon name='purchase-tag-alt' type='solid' color='#4cf38a' ></box-icon>
                           pagar
                         </button>

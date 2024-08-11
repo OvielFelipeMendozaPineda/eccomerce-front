@@ -74,7 +74,7 @@ const getAllPedidosByEstado = async (state) => {
 export default function PedidosPage() {
   const [headers, setHeaders] = useState([]);
   const [newPedidoView, setNewPedidoView] = useState(false);
-  const [pedidosEstado, setPedidosEstado] = useState('Activo');
+  const [pedidosEstado, setPedidosEstado] = useState('CREADO');
   const [fechaEsperada, setfechaEsperada] = useState('');
   const [comentarios, setComentarios] = useState('');
   const [productos, setProductos] = useState([]);
@@ -82,6 +82,7 @@ export default function PedidosPage() {
   const [selectedProductos, setSelectedProductos] = useState([{ id: '', cantidad: 1 }]);
   const [selectedOrder, setselectedOrder] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [payModalVisivble, setpayModalVisivble] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [enviado, setenviado] = useState()
@@ -132,7 +133,6 @@ export default function PedidosPage() {
 
 
   useEffect(() => {
-    console.log('fetch por estado');
 
     const fetchPedidosByEstado = async () => {
       console.log(pedidosEstado);
@@ -188,11 +188,9 @@ export default function PedidosPage() {
       pedido: newPedido,
       productos: selectedProductos
     };
-    console.log(payload);
 
     try {
       const URL = '/admin/pedido/crear';
-      console.log(payload);
 
       const response = await axios.post(URL, payload);
       if (response.status === 201) {
@@ -215,6 +213,11 @@ export default function PedidosPage() {
     setselectedOrder(order);
 
     setEditModalVisible(true);
+  };
+  const handlePayClick = (order) => {
+    setselectedOrder(order);
+
+    setpayModalVisivble(true);
   };
 
   const handleViewClick = (order) => {
@@ -244,7 +247,6 @@ export default function PedidosPage() {
       handleErrors(error)
     }
     setEditModalVisible(false);
-    console.log('Customer updated:', updatedOrder);
   };
 
   const handleDeleteConfirm = async () => {
@@ -292,6 +294,7 @@ export default function PedidosPage() {
             onEdit={handleEditClick}
             onView={handleViewClick}
             onDelete={handleDeleteClick}
+            onPay={handlePayClick}
             showPayButton={true}
           />
         </div>
@@ -365,6 +368,7 @@ export default function PedidosPage() {
       <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Pedido"} />
       <ViewOrderDetails object={selectedOrder} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm} />
+      <PayModal show={payModalVisivble} onClose={() => setpayModalVisivble(false)} />
     </>
   );
 }
@@ -418,3 +422,110 @@ function DeletePedido({ handleSubmit, show, onClose }) {
 }
 
 
+
+function PayModal({ show, onClose }) {
+  const [clientes, setclientes] = useState([])
+  const [metodosPago, setmetodosPago] = useState([])
+  const [empleados, setempleados] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [clientesRes, empleadosRes, metodosPagoRes] = await Promise.all(
+          [
+            axios.get('/admin/cliente/getAll'),
+            axios.get('/admin/empleados/getAll'),
+            axios.get('/admin/formaPago/getAll')
+          ]
+        )
+        setclientes(clientesRes.data)
+        setempleados(empleadosRes.data)
+        setmetodosPago(metodosPagoRes.data)
+      } catch (error) {
+      }
+    }
+    fetchData()
+  }, [])
+
+
+console.log(metodosPago);
+
+
+  if (!show) {
+    return null
+  }
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Generar Pago</h2>
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <label
+              htmlFor="cliente"
+              className="w-1/3 text-sm font-medium text-gray-700"
+            >
+              Cliente
+            </label>
+            <select name="" id="">
+              {clientes.map((cliente) => (
+                <option value={cliente.id}>{cliente.nombre + ' ' + cliente.apellido}</option>
+              ))}
+            </select>
+
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label
+              htmlFor="metodo-pago"
+              className="w-1/3 text-sm font-medium text-gray-700"
+            >
+              Método de Pago
+            </label>
+            <select name="" id="">
+              {metodosPago.map((metodo) => (
+                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={metodo.id}>{metodo.nombre }</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label
+              htmlFor="empleado"
+              className="w-1/3 text-sm font-medium text-gray-700"
+            >
+              Empleado Encargado
+            </label>
+            <select name="" id="">
+              {empleados.map((empleado) => (
+                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={empleado.id}>{empleado.primerNombre + ' ' + empleado.primerApellido}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label
+              htmlFor="valor"
+              className="w-1/3 text-sm font-medium text-gray-700"
+            >
+              Valor
+            </label>
+            <input
+              type="text"
+              id="valor"
+              className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+              defaultValue="39,900"
+            />
+          </div>
+        </div>
+        <div className="mt-6 flex justify-end space-x-3">
+          <button onClick={onClose} className="rounded-lg bg-gray-300 px-5 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+            Cancelar
+          </button>
+          <button className="rounded-lg bg-blue-500 px-5 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Pagar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  )
+}

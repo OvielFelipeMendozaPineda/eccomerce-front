@@ -7,7 +7,7 @@ import { ModalEditarOffice, ViewOfficeModal, ConfirmDeleteModalOffice } from '..
 import CrearOfficeModal from './CrearOfficeModal';
 import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
-import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
+import EditarOficina from './EditarOficina';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -27,8 +27,8 @@ const getAllOffices = async () => {
     const response = await axios.get('/admin/oficinas/getAll');
     console.log(response.data);
     return response.data || [];
-    
-    
+
+
   } catch (error) {
     console.error('Error fetching all offices:', error);
     return [];
@@ -41,20 +41,20 @@ export default function OficinasPage() {
     { title: 'ID', key: 'id', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
     { title: 'Nombre', key: 'nombre', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
     {
-        title: 'Dirección',
-        key: 'direccion',
-        className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal',
-        render: (office) => {
-            if (!office.direccion) return 'Sin dirección';
-            const { tipoCalle, nombreCalle, numeroCalle, numeroComplemento, ciudad } = office.direccion;
-            return `${tipoCalle || ''} ${nombreCalle || ''} ${numeroCalle || ''} ${numeroComplemento ? `#${numeroComplemento}` : ''}, ${ciudad || ''}`;
-        }
+      title: 'Dirección',
+      key: 'direccion',
+      className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal',
+      render: (office) => {
+        if (!office.direccion) return 'Sin dirección';
+        const { tipoCalle, nombreCalle, numeroCalle, numeroComplemento, ciudad } = office.direccion;
+        return `${tipoCalle || ''} ${nombreCalle || ''} ${numeroCalle || ''} ${numeroComplemento ? `#${numeroComplemento}` : ''}, ${ciudad || ''}`;
+      }
     },
     { title: 'Teléfono', key: 'telefono', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' }
-];
+  ];
 
 
-  
+
   const [showModal, setShowModal] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -76,7 +76,7 @@ export default function OficinasPage() {
   const handleEditClick = (office) => {
     setSelectedOffice(office);
     setEditModalVisible(true);
-    
+
   };
 
   const handleViewClick = (office) => {
@@ -90,16 +90,19 @@ export default function OficinasPage() {
   };
 
   const handleEditSave = async (updatedOffice) => {
+    console.log(updatedOffice);
+    
     try {
-      const response = await axios.put(`/admin/oficinas/update/${updatedOffice.id}`, updatedOffice);
-      Toast.fire({
-        icon: 'success',
-        title: 'Oficina actualizada con éxito',
-      });
-      setEditModalVisible(false);
-      // Actualiza la lista de oficinas después de la edición exitosa
-      const data = await getAllOffices();
-      setOffices(data);
+      const response = await axios.put(`/admin/oficinas/update`, updatedOffice);
+      if (response.status === 200) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Oficina actualizada con éxito',
+        });
+        setEditModalVisible(false);
+        const data = await getAllOffices();
+        setOffices(data);
+      }
     } catch (error) {
       console.error('Error al actualizar la oficina:', error);
       Toast.fire({
@@ -112,13 +115,13 @@ export default function OficinasPage() {
   const handleCreateSave = async (newOffice) => {
     try {
       const response = await axios.post('/admin/oficinas/create', newOffice);
-      console.log("Server Response:", response.data); // Añadir esta línea para verificar la respuesta del servidor
+      console.log("Server Response:", response.data);
       Toast.fire({
         icon: 'success',
         title: 'Oficina creada con éxito',
       });
       setShowModal(false);
-      // Actualiza la lista de oficinas después de la creación exitosa
+
       const data = await getAllOffices();
       setOffices(data);
     } catch (error) {
@@ -129,10 +132,12 @@ export default function OficinasPage() {
       });
     }
   };
-  
+
 
   const handleDeleteConfirm = async () => {
     try {
+      console.log(selectedOffice.id);
+      
       const URL = `/admin/oficinas/delete?id=${selectedOffice.id}`;
       const response = await axios.delete(URL);
       if (response.status === 200) {
@@ -168,7 +173,7 @@ export default function OficinasPage() {
       </div>
       <CrearOfficeModal show={showModal} onClose={handleModal} onSave={handleCreateSave} />
       <ViewOfficeModal office={selectedOffice} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
-      <ModalEditar entidad={'oficina'} objecto={selectedOffice} onClose={() => {setEditModalVisible(false)}} onSave={handleEditSave} show={editModalVisible}   />
+      <EditarOficina show={editModalVisible} onClose={() => setEditModalVisible(false)} confirmEdit={handleEditSave} oficina={selectedOffice} />
       <ConfirmDeleteModalOffice show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>
   );

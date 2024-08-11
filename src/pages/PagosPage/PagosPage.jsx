@@ -37,6 +37,7 @@ export default function PagosPage() {
     metodoPago: '',
     editViewVisible: false,
     deleteViewVisible: false,
+    selectedPago: null,
   })
 
   const loadHeaders = async (data) => {
@@ -53,7 +54,7 @@ export default function PagosPage() {
       try {
         const [pagosRes, formaPagoRes] = await Promise.all([
           axios.get('/admin/pagos/getAll'),
-          axios.get('/admin/formaPago/getAll')
+          axios.get('/admin/formaPagoTercero/getAll')
         ]);
         setState((prevData) => ({
           ...prevData,
@@ -62,11 +63,7 @@ export default function PagosPage() {
         }));
       } catch (error) {
         console.warn(error);
-        setState((prevData) => ({
-          ...prevData,
-          pagos: mockPagos,
-          metodosPago: mockMetodosPago
-        }));
+
       }
     };
 
@@ -111,7 +108,9 @@ export default function PagosPage() {
 
   }
 
-  const handleEditView = () => {
+  const handleEditView = (selectedPago) => {
+    console.log(selectedPago);
+    
     setState((prevData) => ({ ...prevData, editViewVisible: true }))
   }
 
@@ -138,8 +137,8 @@ export default function PagosPage() {
         </div>
         <div>
           <Table
-            // data={state.pagos}
-            data={mockPagos}
+            data={state.pagos}
+            // data={mockPagos}
             headers={state.headers}
             notShow={false}
             showPayButton={false}
@@ -152,6 +151,7 @@ export default function PagosPage() {
       show={state.editViewVisible} 
       onClose={() => setState((prevData) => ({ ...prevData, editViewVisible: false }))} 
       metodosPago={state.metodosPago}
+
       />
     </>
   )

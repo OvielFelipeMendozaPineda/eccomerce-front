@@ -74,8 +74,6 @@ export default function ProductsPage() {
 
   const handleEditSave = async (updatedProduct) => {
     const data = new FormData();
-
-    // Crear un Blob para el JSON con el tipo 'application/json'
     data.append('producto', new Blob([JSON.stringify({
       nombre: updatedProduct.nombre,
       descripcion: updatedProduct.descripcion,
@@ -85,7 +83,7 @@ export default function ProductsPage() {
       estado: updatedProduct.estado
     })], { type: 'application/json' }));
 
-    // Añadir la imagen si está disponible
+
     if (updatedProduct.imagen) {
       data.append('imagen', updatedProduct.imagen);
     }
@@ -147,7 +145,6 @@ export default function ProductsPage() {
       </div>
       <ModalNewProduct show={showModal} handleModal={handleModal} />
       <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
-      {/* <EditProductModal objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} /> */}
       <ViewProductModal product={selectedProduct} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <ConfirmDeleteModal show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>

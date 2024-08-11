@@ -15,12 +15,11 @@ const Toast = Swal.mixin({
   }
 });
 
-const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => {
+const Table = ({ data, headers, notShow, onEdit, onView, onDelete, showPayButton = false }) => {
 
   const handleToggleChange = async (row) => {
     const data = new FormData();
 
-    // Crear un Blob para el JSON con el tipo 'application/json'
     data.append('producto', new Blob([JSON.stringify({
       nombre: row.nombre,
       descripcion: row.descripcion,
@@ -30,7 +29,7 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => {
       estado: !row.estado
     })], { type: 'application/json' }));
 
-    // Añadir la imagen si está disponible
+
     if (row.imagen) {
       data.append('imagen', row.imagen);
     }
@@ -94,11 +93,17 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete }) => {
                   ) : ""}
                   <td className=' flex justify-center gap-5'>
                     <div className="inline-flex rounded-lg border border-gray-100 gap-5 bg-gray-100 p-1">
-                      <button onClick={() => {onEdit(row)}} className="edit-btn inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-500 hover:text-gray-700 focus:relative">
+                      {showPayButton ? (
+                        <button onClick={() => { onEdit(row) }} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm text-green-500 shadow-sm focus:relative">
+                          <box-icon name='purchase-tag-alt' type='solid' color='#4cf38a' ></box-icon>
+                          pagar
+                        </button>
+                      ) : (null)}
+                      <button onClick={() => { onEdit(row) }} className="edit-btn inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-500 hover:text-gray-700 focus:relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                         </svg>
-                        Edit 
+                        Edit
                       </button>
                       <button onClick={() => onView(row)} className="details-btn inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm text-gray-500 hover:text-gray-700 focus:relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">

@@ -183,12 +183,12 @@ export default function PedidosPage() {
       estado: estadosEnum[0],
       comentarios: comentarios,
     };
-    console.log(selectedProductos);
 
     const payload = {
       pedido: newPedido,
       productos: selectedProductos
     };
+    console.log(payload);
 
     try {
       const URL = '/admin/pedido/crear';
@@ -292,6 +292,7 @@ export default function PedidosPage() {
             onEdit={handleEditClick}
             onView={handleViewClick}
             onDelete={handleDeleteClick}
+            showPayButton={true}
           />
         </div>
       </div>
@@ -415,3 +416,5 @@ function DeletePedido({ handleSubmit, show, onClose }) {
 
   )
 }
+
+

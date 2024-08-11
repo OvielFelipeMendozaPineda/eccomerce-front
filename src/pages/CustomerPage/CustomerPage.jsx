@@ -104,6 +104,8 @@ export default function CustomerPage() {
     const handleEditSave = async (updatedCustomer) => {
         try {
             const response = await axios.put(`/admin/cliente/update/${updatedCustomer.id}`, updatedCustomer);
+            console.log(response);
+
             if (response.status === 200) {
                 Toast.fire({ icon: 'success', title: 'Cliente actualizado exitosamente!' });
                 fetchClientes();
@@ -115,7 +117,7 @@ export default function CustomerPage() {
     };
 
 
-    
+
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -179,7 +181,7 @@ export default function CustomerPage() {
                 show={editModalVisible}
                 onClose={() => setEditModalVisible(false)}
                 onSave={handleEditSave}
-                entidad={"Producto"}
+                entidad={"Cliente"}
             />
             <InformacionCliente
                 customer={selectedCustomer}

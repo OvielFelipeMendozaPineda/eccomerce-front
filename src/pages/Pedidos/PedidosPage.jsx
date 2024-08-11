@@ -33,7 +33,10 @@ const getAllProductos = async () => {
   try {
     const url = '/admin/producto/getAll';
     const response = await axios.get(url);
-    return response.data || [];
+    if (response.status === 200) {
+      return response.data || [];
+    }
+    return []
   } catch (error) {
     return [];
   }
@@ -43,9 +46,12 @@ const getAllPedidos = async () => {
   try {
     const url = '/admin/pedido/getAll';
     const response = await axios.get(url);
-    return response.data || [];
-  } catch (error) {
+    if (response.status === 200) {
+      return response.data || [];
+    }
     return []
+  } catch (error) {
+    return [];
   }
 };
 
@@ -63,13 +69,6 @@ const getAllPedidosByEstado = async (state) => {
   }
 };
 
-const estados = [
-  'PENDIENTE',
-  'PROCESANDO',
-  'ENVIADO',
-  'ENTREGADO',
-  'CANCELADO',
-]
 
 
 export default function PedidosPage() {
@@ -86,10 +85,10 @@ export default function PedidosPage() {
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [enviado, setenviado] = useState()
+
   const estadosEnum = [
-    'PENDIENTE',
-    'PROCESANDO',
-    'ENVIADO',
+    'CREADO',
+    'PAGADO',
     'ENTREGADO',
     'CANCELADO',
   ]
@@ -134,10 +133,10 @@ export default function PedidosPage() {
 
   useEffect(() => {
     console.log('fetch por estado');
-    
+
     const fetchPedidosByEstado = async () => {
       console.log(pedidosEstado);
-      
+
       const pedidos = await getAllPedidosByEstado(pedidosEstado);
       setProductos(pedidos);
     };
@@ -181,7 +180,7 @@ export default function PedidosPage() {
       fechaPedido: new Date().toISOString().split('T')[0],
       fechaEntrega: null,
       fechaEsperada: fechaEsperada,
-      estado: 'Activo',
+      estado: estadosEnum[0],
       comentarios: comentarios,
     };
     console.log(selectedProductos);
@@ -266,7 +265,7 @@ export default function PedidosPage() {
   };
 
   const handleStatusSelectorChange = (e) => {
-    setPedidosEstado(e.target.value)    
+    setPedidosEstado(e.target.value)
   }
 
   return (

@@ -21,7 +21,6 @@ const Toast = Swal.mixin({
   }
 });
 
-// Función para obtener todos los productos
 const getAllProducts = async () => {
   try {
     const response = await axios.get('/admin/producto/getAll');
@@ -32,13 +31,29 @@ const getAllProducts = async () => {
   }
 };
 
+const getAllGamas = async () => {
+  try {
+    const response = await axios.get('/public/gama/getAll');
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching all gamas:', error);
+    return [];
+  }
+};
+
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
+  const [gamas, setGamas] = useState([]);
+  const [selectedGama, setSelectedGama] = useState('');
+  const [selectedStockRange, setSelectedStockRange] = useState([0, 100]);
+  const [stockFilterVisible, setStockFilterVisible] = useState(false);
+
   const headers = [
     { title: 'ID', key: 'id', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
     { title: 'Nombre', key: 'nombre', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
     { title: 'Precio', key: 'precio', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' }
   ];
+
   const [showModal, setShowModal] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -50,7 +65,14 @@ export default function ProductsPage() {
       const data = await getAllProducts();
       setProducts(data);
     };
+
+    const fetchGamas = async () => {
+      const gamaData = await getAllGamas();
+      setGamas(gamaData);
+    };
+
     fetchProducts();
+    fetchGamas();
   }, []);
 
   const handleModal = () => {
@@ -75,7 +97,6 @@ export default function ProductsPage() {
   const handleEditSave = async (updatedProduct) => {
     const data = new FormData();
 
-    // Crear un Blob para el JSON con el tipo 'application/json'
     data.append('producto', new Blob([JSON.stringify({
       nombre: updatedProduct.nombre,
       descripcion: updatedProduct.descripcion,
@@ -85,7 +106,6 @@ export default function ProductsPage() {
       estado: updatedProduct.estado
     })], { type: 'application/json' }));
 
-    // Añadir la imagen si está disponible
     if (updatedProduct.imagen) {
       data.append('imagen', updatedProduct.imagen);
     }
@@ -124,13 +144,85 @@ export default function ProductsPage() {
     setConfirmDeleteVisible(false);
   };
 
+  const handleGamaChange = async (e) => {
+    const selectedGama = e.target.value;
+    setSelectedGama(selectedGama);
+
+    if (selectedGama) {
+      try {
+        const response = await axios.get(`/admin/producto/getByGamaId/${selectedGama}`);
+        setProducts(response.data || []);
+      } catch (error) {
+        console.error('Error fetching products by gama:', error);
+      }
+    } else {
+      const data = await getAllProducts();
+      setProducts(data);
+    }
+  };
+
+  const handleStockChange = async (e) => {
+    const newRange = e.target.value;
+    setSelectedStockRange(newRange);
+
+    try {
+      const response = await axios.get(`/admin/producto/getByStock/${newRange}`);
+      setProducts(response.data || []);
+    } catch (error) {
+      console.error('Error fetching products by stock:', error);
+    }
+  };
+
   return (
     <>
       <div className='flex flex-col w-full h-screen'>
         <div className='my-5 text-3xl font-medium'><Header pageTitle={"Productos"} /></div>
         <div className='w-96 my-5'><SearchBar /></div>
-        <div className='flex justify-end w-96'>
-          <div className='w-96 my-5'>
+        <div className='flex flex-col md:flex-row md:justify-between md:items-center'>
+          <div className='w-full md:w-1/3 mb-5'>
+            <Button
+              children={'Filtrar por Gama'}
+              className={'bg-gray-200 w-full p-3 rounded-xl font-medium hover:bg-gray-300'}
+              type={'button'}
+              onClick={() => document.getElementById('gamaSelect').classList.toggle('hidden')}
+            />
+            <select
+              id="gamaSelect"
+              value={selectedGama}
+              onChange={handleGamaChange}
+              className="hidden mt-1 w-full p-2 border-gray-300 rounded-md shadow-sm"
+            >
+              <option value=''>Todas las gamas</option>
+              {gamas.map((gama) => (
+                <option key={gama.id} value={gama.id}>{gama.nombre}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className='w-full md:w-1/3 mb-5'>
+            <Button
+              children={'Filtrar por Stock'}
+              className={'bg-gray-200 w-full p-3 rounded-xl font-medium hover:bg-gray-300'}
+              type={'button'}
+              onClick={() => setStockFilterVisible(!stockFilterVisible)}
+            />
+            {stockFilterVisible && (
+              <div className="mt-2">
+                <input
+                  id="stockRange"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={selectedStockRange}
+                  onChange={handleStockChange}
+                  className="w-full"
+                />
+                <span>Stock: {selectedStockRange}</span>
+              </div>
+            )}
+          </div>
+
+          <div className='w-full md:w-1/3'>
             <Button children={'Crear nuevo producto'} id={"create-product-btn"} className={'bg-gray-200 w-full p-3 rounded-xl font-medium hover:bg-gray-300'} onClick={handleModal} type={'button'} />
           </div>
         </div>
@@ -147,7 +239,6 @@ export default function ProductsPage() {
       </div>
       <ModalNewProduct show={showModal} handleModal={handleModal} />
       <ModalEditar objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Producto"} />
-      {/* <EditProductModal objecto={selectedProduct} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} /> */}
       <ViewProductModal product={selectedProduct} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <ConfirmDeleteModal show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>

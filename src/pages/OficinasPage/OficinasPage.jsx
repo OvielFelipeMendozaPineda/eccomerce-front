@@ -7,6 +7,7 @@ import { ModalEditarOffice, ViewOfficeModal, ConfirmDeleteModalOffice } from '..
 import CrearOfficeModal from './CrearOfficeModal';
 import axios from '../../utils/axios/ConfigAxios';
 import Swal from 'sweetalert2';
+import { ModalEditar } from '../../components/ModalEditar/ModalEditar';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -75,6 +76,7 @@ export default function OficinasPage() {
   const handleEditClick = (office) => {
     setSelectedOffice(office);
     setEditModalVisible(true);
+    
   };
 
   const handleViewClick = (office) => {
@@ -131,7 +133,7 @@ export default function OficinasPage() {
 
   const handleDeleteConfirm = async () => {
     try {
-      const URL = `/admin/oficinas/delete/${selectedOffice.id}`;
+      const URL = `/admin/oficinas/delete?id=${selectedOffice.id}`;
       const response = await axios.delete(URL);
       if (response.status === 200) {
         Toast.fire('Success', 'Oficina eliminada con éxito', 'success');
@@ -166,6 +168,7 @@ export default function OficinasPage() {
       </div>
       <CrearOfficeModal show={showModal} onClose={handleModal} onSave={handleCreateSave} />
       <ViewOfficeModal office={selectedOffice} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
+      <ModalEditar entidad={'oficina'} objecto={selectedOffice} onClose={() => {setEditModalVisible(false)}} onSave={handleEditSave} show={editModalVisible}   />
       <ConfirmDeleteModalOffice show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={handleDeleteConfirm} />
     </>
   );

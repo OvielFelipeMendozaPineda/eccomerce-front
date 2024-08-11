@@ -24,7 +24,7 @@ const ViewProductModal = ({ product, show, onClose }) => {
           <h2 className="text-2xl font-medium">Detalles del Producto</h2>
           <Button children={<box-icon className='text-4xl' name='x-circle'></box-icon>} id='close-view-product-btn' onClick={onClose} type='button' className='text-gray-500 hover:text-gray-700' />
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col w-96 gap-5">
           {imageUrl ? (
             <img src={imageUrl} alt={product.nombre} className="w-full h-auto rounded-lg" />
           ) : (

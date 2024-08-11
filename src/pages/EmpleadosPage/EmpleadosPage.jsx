@@ -21,11 +21,11 @@ const Toast = Swal.mixin({
 const rolesArr = [
   'EMPLEADO', 'CAJERO', 'GERENTE', 'ADMINISTRADOR', 'SUPERVISOR', 'VENDEDOR'
 ]
-// const mockOficinas = [
-//   { id: 1, nombre: 'Exito La Rosita' },
-//   { id: 2, nombre: 'Exito Cacique C.C.' },
-//   { id: 3, nombre: 'Exito Cañaveral C.C.' },
-// ]
+const mockOficinas = [
+  { id: 1, nombre: 'Exito La Rosita' },
+  { id: 2, nombre: 'Exito Cacique C.C.' },
+  { id: 3, nombre: 'Exito Cañaveral C.C.' },
+]
 
 const mockEmpleados = [
   { id: 1, firstName: 'Felipe', lastName: 'Mendoza', email: 'oviel@gmail.com', telefono: 3165880800, oficina: 1, rol: 1, puesto: 'No se...por ahi', jefe: 1 },
@@ -38,7 +38,7 @@ export default function EmpleadosPage() {
   const [vistaCrearEmpleado, setVistaCrearEmpleado] = useState(false)
   const [roles, setroles] = useState([])
   const [terceros, setTerceros] = useState([])
-  const [oficinas, setOficinas] = useState([])
+  const [oficinas, setOficinas] = useState(mockOficinas)
   const [empleados, setEmpleados] = useState([])
   const [headers, setHeaders] = useState([])
   const [tableUpdate, setTableUpdate] = useState(false)
@@ -67,12 +67,8 @@ export default function EmpleadosPage() {
             axios.get('/admin/empleados/getAll')
           ]
         )
-        setOficinas(
-          { id: 1, nombre: 'Exito La Rosita' },
-          { id: 2, nombre: 'Exito Cacique C.C.' },
-          { id: 3, nombre: 'Exito Cañaveral C.C.' },
-        )
-        setEmpleados(empleadosRes.data || [])
+        setOficinas(oficinasRes.data)
+        setEmpleados(empleadosRes.data)
         setroles(rolesArr)
 
       } catch (error) {
@@ -119,9 +115,10 @@ export default function EmpleadosPage() {
   };
 
   const handleDeleteConfirm = async (employee) => {
+    
     try {
-      const url = `/admin/empleados/delete?id=${employee.id}`
-      const response = await axios.get(url)
+      const url = `/admin/empleados/borrar?id=${employee.id}`
+      const response = await axios.delete(url)
       setEmpleados(response.data);
       setTableUpdate(true)
       setConfirmDeleteVisible(false)
@@ -182,20 +179,22 @@ export default function EmpleadosPage() {
   }
 
   const handleEditSave = async (updatedEmployee) => {
+    console.log(updatedEmployee);
+    
     const url = `/admin/empleados/update/${updatedEmployee.id}`
-
     const payload = {
-      primerNombre: updatedEmployee.firstName,
-      primerApellido: updatedEmployee.lastName,
+      id: updatedEmployee.id,
+      primerNombre: updatedEmployee.primerNombre,
+      primerApellido: updatedEmployee.primerApellido,
       email: updatedEmployee.email,
       telefono: updatedEmployee.telefono,
-      puesto: updatedEmployee.puesto,
       rol: updatedEmployee.rol,
-      oficina: updatedEmployee.oficina,
+      oficinaNombre: updatedEmployee.oficinaNombre,
+      oficina: updatedEmployee.oficina,  
       jefe: updatedEmployee.jefe
-    }
+    };
     console.log(payload);
-
+    
     try {
       const response = await axios.put(url, payload)
       if (response.status === 200) {
@@ -216,18 +215,18 @@ export default function EmpleadosPage() {
 
   return (
     <>
-      <div className='flex flex-col w-full gap-5 h-screen'>
+      <div className='flex flex-col w-full gap-10 h-screen'>
         <div><h2 className='text-2xl'>Gestión de Empleados</h2></div>
-        <div className='w-full flex justify-center'>
-          <div>
-            <label>Filtrar por oficina</label>
-            <select>
+        <div className='w-full flex justify-around'>
+          <div className='flex items-center gap-5 justify-between'>
+            <label className='text-gray-500 '>Filtrar por oficina:</label>
+            <select className='rounded-lg ring-0 border-none focus:ring-0 '>
               {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
                 <option key={oficina.id} value={oficina.id}> {oficina.nombre} </option>
               ))}
             </select>
           </div>
-          <button onClick={() => setVistaCrearEmpleado(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
+          <button onClick={() => setVistaCrearEmpleado(true)} className='bg-blue-900 text-white px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table
@@ -318,7 +317,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
               <label htmlFor=""> Oficina </label>
               <select onChange={handleChange} name="oficina_id" id="oficina">
                 <option value="" > Seleccionar oficna</option>
-                {oficinas.map((oficina) => (
+                {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
                   <option value={oficina.id}> {oficina.nombre} </option>
                 ))}
               </select>
@@ -331,7 +330,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
                   if (empleado.id === 1) {
                     return null
                   } else {
-                    return <option value={empleado.id}> {empleado.firstName} </option>
+                    return <option value={empleado.id}> {empleado.primerNombre} </option>
                   }
                 })}
 
@@ -357,7 +356,6 @@ function VerEmpleado({ show, onClose, empleado }) {
           <h2>Editar empleado</h2>
           <button onClick={onClose} className='flex items-center justify-center'><box-icon name='x-circle'></box-icon></button>
         </div>
-        {console.log(empleado)}
         {Object.entries(empleado)?.map(([key, value]) => (
           <div className='flex justify-between'>
             <label htmlFor={key}> {key} </label>

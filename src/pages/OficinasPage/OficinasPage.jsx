@@ -24,7 +24,10 @@ const Toast = Swal.mixin({
 const getAllOffices = async () => {
   try {
     const response = await axios.get('/admin/oficinas/getAll');
+    console.log(response.data);
     return response.data || [];
+    
+    
   } catch (error) {
     console.error('Error fetching all offices:', error);
     return [];
@@ -35,9 +38,22 @@ export default function OficinasPage() {
   const [offices, setOffices] = useState([]);
   const headers = [
     { title: 'ID', key: 'id', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
-    { title: 'Dirección', key: 'direccion', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal', render: (direccion) => `${direccion.tipoCalle} ${direccion.nombreCalle}` },
+    { title: 'Nombre', key: 'nombre', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' },
+    {
+        title: 'Dirección',
+        key: 'direccion',
+        className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal',
+        render: (office) => {
+            if (!office.direccion) return 'Sin dirección';
+            const { tipoCalle, nombreCalle, numeroCalle, numeroComplemento, ciudad } = office.direccion;
+            return `${tipoCalle || ''} ${nombreCalle || ''} ${numeroCalle || ''} ${numeroComplemento ? `#${numeroComplemento}` : ''}, ${ciudad || ''}`;
+        }
+    },
     { title: 'Teléfono', key: 'telefono', className: 'px-4 py-3 text-left text-[#0e141b] text-sm font-medium leading-normal' }
-  ];
+];
+
+
+  
   const [showModal, setShowModal] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -94,6 +110,7 @@ export default function OficinasPage() {
   const handleCreateSave = async (newOffice) => {
     try {
       const response = await axios.post('/admin/oficinas/create', newOffice);
+      console.log("Server Response:", response.data); // Añadir esta línea para verificar la respuesta del servidor
       Toast.fire({
         icon: 'success',
         title: 'Oficina creada con éxito',
@@ -110,6 +127,7 @@ export default function OficinasPage() {
       });
     }
   };
+  
 
   const handleDeleteConfirm = async () => {
     try {

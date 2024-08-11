@@ -11,7 +11,7 @@ const CrearOfficeModal = ({ show, onClose, onSave }) => {
       numeroCalle: '',
       numeroComplemento: '',
       codigoPostal: '',
-      ciudad: '',
+      ciudad: ''
     },
   });
 
@@ -33,9 +33,11 @@ const CrearOfficeModal = ({ show, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Form Data:", formData); // Añadir esta línea para verificar los datos
     onSave(formData);
     onClose(); // Cierra el modal después de guardar
   };
+  
 
   if (!show) return null;
 

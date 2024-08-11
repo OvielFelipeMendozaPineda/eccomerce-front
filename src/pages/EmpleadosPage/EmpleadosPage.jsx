@@ -216,18 +216,18 @@ export default function EmpleadosPage() {
 
   return (
     <>
-      <div className='flex flex-col w-full gap-5 h-screen'>
+      <div className='flex flex-col w-full gap-10 h-screen'>
         <div><h2 className='text-2xl'>Gestión de Empleados</h2></div>
-        <div className='w-full flex justify-center'>
-          <div>
-            <label>Filtrar por oficina</label>
-            <select>
+        <div className='w-full flex justify-around'>
+          <div className='flex items-center gap-5 justify-between'>
+            <label className='text-gray-500 '>Filtrar por oficina:</label>
+            <select className='rounded-lg ring-0 border-none focus:ring-0 '>
               {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
                 <option key={oficina.id} value={oficina.id}> {oficina.nombre} </option>
               ))}
             </select>
           </div>
-          <button onClick={() => setVistaCrearEmpleado(true)} className='bg-gray-300 px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
+          <button onClick={() => setVistaCrearEmpleado(true)} className='bg-blue-900 text-white px-6 py-2 text-bold rounded-lg duration-300 hover:scale-105 hover:text-white hover:bg-green-500'>Registrar nuevo empleados</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table

@@ -163,7 +163,7 @@ export default function OficinasPage() {
         <div className='mt-10'>
           <Table
             headers={headers}
-            notShow={true}
+            notShow={false}
             data={offices}
             onEdit={handleEditClick}
             onView={handleViewClick}

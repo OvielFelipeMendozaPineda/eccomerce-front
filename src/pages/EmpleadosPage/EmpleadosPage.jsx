@@ -106,19 +106,24 @@ export default function EmpleadosPage() {
   };
 
   const handleDeleteConfirm = async (employee) => {
-
     try {
-      const url = `/admin/empleados/borrar?id=${employee.id}`
-      const response = await axios.delete(url)
-      setEmpleados(response.data);
-      setTableUpdate(true)
-      setConfirmDeleteVisible(false)
+      const url = `/admin/empleados/borrar?id=${employee.id}`;
+      const response = await axios.delete(url);
 
+      setEmpleados(prevEmpleados => prevEmpleados.filter(e => e.id !== employee.id));
+
+      setTableUpdate(true);
+      setConfirmDeleteVisible(false);
+
+      Toast.fire({
+        icon: 'success',
+        title: 'Empleado eliminado exitosamente!',
+        confirmButtonText: 'OK',
+      });
     } catch (error) {
-      handleErrors(error)
+      handleErrors(error);
     }
-
-  }
+  };
   const [formData, setFormData] = useState({
     id: '',
     first_name: '',

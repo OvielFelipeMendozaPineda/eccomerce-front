@@ -61,6 +61,7 @@ export default function PedidosPage() {
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [enviado, setenviado] = useState()
   const [isPedidosLoaded, setIsPedidosLoaded] = useState(false);
+  const [clientes, setClientes] = useState([])
 
   const estadosEnum = [
     'CREADO',
@@ -79,12 +80,6 @@ export default function PedidosPage() {
     fetchProductos();
 
   }, []);
-
-
-
-
-
-
 
 
   const handleSelectChange = (index, event) => {
@@ -270,6 +265,21 @@ export default function PedidosPage() {
     setPedidosEstado(e.target.value)
   }
 
+  const getAllClientes = async () => {
+    try {
+      const response = await axios.get('/admin/cliente/getAll')
+      if (response.status == 200) {
+        setClientes(response.data)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  useEffect(() => {
+    getAllClientes()
+  }, [])
+  
   return (
     <>
       <div className='flex flex-col w-full gap-5 h-screen'>
@@ -283,6 +293,15 @@ export default function PedidosPage() {
             <option className='text-gray-200'> Seleccionar estado </option>
             {estadosEnum.map(estado => (
               <option value={estado}> {estado}</option>
+            ))}
+          </select>
+        </div>
+        <div className='flex gap-5 items-center'>
+          <label>Buscar Pedido por cliente </label>
+          <select onChange={handleStatusSelectorChange} className='rounded-lg focus:ring-0' name="searchByStatus" >
+            <option className='text-gray-200'> Seleccionar el cliente </option>
+            {clientes.map(cliente => (
+              <option value={cliente.id}> {cliente.nombre}</option>
             ))}
           </select>
         </div>
@@ -368,7 +387,7 @@ export default function PedidosPage() {
       <ModalEditar objecto={selectedOrder} show={editModalVisible} onClose={() => setEditModalVisible(false)} onSave={handleEditSave} entidad={"Pedido"} />
       <ViewOrderDetails object={selectedOrder} show={viewModalVisible} onClose={() => setViewModalVisible(false)} />
       <DeletePedido show={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} handleSubmit={handleDeleteConfirm} />
-      <PayModal show={payModalVisivble} onClose={() => setpayModalVisivble(false)} />
+      <PayModal show={payModalVisivble} onClose={() => setpayModalVisivble(false)} pedido={selectedOrder} />
     </>
   );
 }
@@ -423,36 +442,66 @@ function DeletePedido({ handleSubmit, show, onClose }) {
 
 
 
-function PayModal({ show, onClose }) {
-  const [clientes, setclientes] = useState([])
-  const [metodosPago, setmetodosPago] = useState([])
-  const [empleados, setempleados] = useState([])
+function PayModal({ show, onClose, pedido }) {
+  const [clientes, setClientes] = useState([]);
+  const [metodosPago, setMetodosPago] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
+
+  const [clienteSeleccionado, setClienteSeleccionado] = useState('');
+  const [metodoPagoSeleccionado, setMetodoPagoSeleccionado] = useState('');
+  const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState('');
+  const [valor, setValor] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [clientesRes, empleadosRes, metodosPagoRes] = await Promise.all(
-          [
-            axios.get('/admin/cliente/getAll'),
-            axios.get('/admin/empleados/getAll'),
-            axios.get('/admin/formaPago/getAll')
-          ]
-        )
-        setclientes(clientesRes.data)
-        setempleados(empleadosRes.data)
-        setmetodosPago(metodosPagoRes.data)
+        const [clientesRes, empleadosRes, metodosPagoRes] = await Promise.all([
+          axios.get('/admin/cliente/getAll'),
+          axios.get('/admin/empleados/getAll'),
+          axios.get('/admin/formaPago/getAll'),
+        ]);
+        setClientes(clientesRes.data);
+        setEmpleados(empleadosRes.data);
+        setMetodosPago(metodosPagoRes.data);
       } catch (error) {
+        console.error('Error fetching data', error);
       }
+    };
+    fetchData();
+  }, []);
+
+  const handlePayClick = async () => {
+    const payload = {
+      terceroId: clienteSeleccionado,
+      formaPagoId: metodoPagoSeleccionado,
+      empleadoId: empleadoSeleccionado,
+      fechaPago: new Date().toISOString(),
+    };
+
+    try {
+      const responsePago = await axios.post('/admin/formaPagoTercero/create', payload);
+      if (responsePago.status === 200) {
+          pedido.estado = 'PAGADO'
+          const responsePedidoEstado = axios.put(`/admin/pedido/update/${pedido.id}`, pedido)
+          if (responsePedidoEstado == 200) {
+            Toast.fire({
+              icon: 'success',
+              title: 'Pedido pagado exitosamente',
+              timer: 2000
+            })
+          }
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error al crear el pago:', error);
     }
-    fetchData()
-  }, [])
-
-
-
+  };
 
   if (!show) {
-    return null
+    return null;
   }
+
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
@@ -461,70 +510,74 @@ function PayModal({ show, onClose }) {
         </div>
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="cliente"
-              className="w-1/3 text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="cliente" className="w-1/3 text-sm font-medium text-gray-700">
               Cliente
             </label>
-            <select name="" id="">
+            <select
+              id="cliente"
+              value={clienteSeleccionado}
+              onChange={(e) => setClienteSeleccionado(e.target.value)}
+            >
+              <option value="">Seleccione un cliente</option>
               {clientes.map((cliente) => (
-                <option value={cliente.id}>{cliente.nombre + ' ' + cliente.apellido}</option>
+                <option key={cliente.id} value={cliente.id}>
+                  {cliente.nombre + ' ' + cliente.apellido}
+                </option>
               ))}
             </select>
-
           </div>
+
           <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="metodo-pago"
-              className="w-1/3 text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="metodo-pago" className="w-1/3 text-sm font-medium text-gray-700">
               Método de Pago
             </label>
-            <select name="" id="">
+            <select
+              id="metodo-pago"
+              value={metodoPagoSeleccionado}
+              onChange={(e) => setMetodoPagoSeleccionado(e.target.value)}
+            >
+              <option value="">Seleccione un método de pago</option>
               {metodosPago.map((metodo) => (
-                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={metodo.id}>{metodo.nombre}</option>
+                <option key={metodo.id} value={metodo.id}>
+                  {metodo.nombre}
+                </option>
               ))}
             </select>
           </div>
+
           <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="empleado"
-              className="w-1/3 text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="empleado" className="w-1/3 text-sm font-medium text-gray-700">
               Empleado Encargado
             </label>
-            <select name="" id="">
+            <select
+              id="empleado"
+              value={empleadoSeleccionado}
+              onChange={(e) => setEmpleadoSeleccionado(e.target.value)}
+            >
+              <option value="">Seleccione un empleado</option>
               {empleados.map((empleado) => (
-                <option className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500" value={empleado.id}>{empleado.primerNombre + ' ' + empleado.primerApellido}</option>
+                <option key={empleado.id} value={empleado.id}>
+                  {empleado.primerNombre + ' ' + empleado.primerApellido}
+                </option>
               ))}
             </select>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="valor"
-              className="w-1/3 text-sm font-medium text-gray-700"
-            >
-              Valor
-            </label>
-            <input
-              type="text"
-              id="valor"
-              className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
-              defaultValue="39,900"
-            />
           </div>
         </div>
         <div className="mt-6 flex justify-end space-x-3">
-          <button onClick={onClose} className="rounded-lg bg-gray-300 px-5 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <button
+            onClick={onClose}
+            className="rounded-lg bg-gray-300 px-5 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          >
             Cancelar
           </button>
-          <button className="rounded-lg bg-blue-500 px-5 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button
+            onClick={handlePayClick}
+            className="rounded-lg bg-blue-500 px-5 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             Pagar
           </button>
         </div>
       </div>
     </div>
-
-  )
+  );
 }

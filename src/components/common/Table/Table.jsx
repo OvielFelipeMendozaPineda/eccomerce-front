@@ -52,7 +52,8 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete, onPay, showPa
       });
     }
   };
-
+  ;
+  
   return (
     <div className="px-4 py-3">
       <div className="flex overflow-x-scroll overflow-y-scroll rounded-xl border border-[#d0dbe6] bg-[#f8fafb]">
@@ -93,7 +94,7 @@ const Table = ({ data, headers, notShow, onEdit, onView, onDelete, onPay, showPa
                   ) : ""}
                   <td className=' flex justify-center gap-5'>
                     <div className="inline-flex rounded-lg border border-gray-100 gap-5 bg-gray-100 p-1">
-                      {showPayButton ? (
+                      {showPayButton && row.estado != 'PAGADO' ? (
                         <button onClick={() => { onPay(row) }} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm text-green-500 shadow-sm focus:relative">
                           <box-icon name='purchase-tag-alt' type='solid' color='#4cf38a' ></box-icon>
                           pagar

@@ -38,6 +38,8 @@ export default function PagosPage() {
     editViewVisible: false,
     deleteViewVisible: false,
     selectedPago: null,
+    clientes: [],
+    cliente: 'getAllByClientes',
   })
 
   const loadHeaders = async (data) => {
@@ -53,8 +55,8 @@ export default function PagosPage() {
     const fetchData = async () => {
       try {
         const [pagosRes, formaPagoRes] = await Promise.all([
-          axios.get('/admin/pagos/getAll'),
-          axios.get('/admin/formaPagoTercero/getAll')
+          axios.get('/admin/formaPagoTercero/getAll'),
+          axios.get('/admin/formaPago/getAll')
         ]);
         setState((prevData) => ({
           ...prevData,
@@ -110,7 +112,7 @@ export default function PagosPage() {
 
   const handleEditView = (selectedPago) => {
     console.log(selectedPago);
-    
+
     setState((prevData) => ({ ...prevData, editViewVisible: true }))
   }
 
@@ -119,6 +121,70 @@ export default function PagosPage() {
     console.log('enviar actualizado');
 
   }
+
+  const handleClienteSelectorChange = async (e) => {
+    const { value } = e.target
+    setState((prevData) => ({ ...prevData, cliente: value }))
+  
+
+
+  }
+
+  const getAllClientes = async () => {
+    try {
+      const response = await axios.get('/admin/cliente/getAll')
+      if (response.status == 200) {
+        setState((prevData) => ({ ...prevData, clientes: response.data }))
+      }
+    } catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+    if (!state.cliente) {
+      return
+    }
+    const fetchData = async () => {
+      console.log(state.cliente);
+      
+      if (state.cliente == 'getAllByClientes') {      
+          try {
+            const response = await axios.get('/admin/formaPagoTercero/getAll')
+            if (response.status == 200) {
+              setState((prevData) => ({...prevData, pagos: response.data}))
+            }
+          } catch (error) {
+            console.warn(error);
+            
+          }
+      } else {
+        try {
+          const response = await axios.get(`/admin/formaPagoTercero/getByTerceroId?terceroId=${state.cliente}`)
+          if (response.status = 200) {
+            setState((prevData) => ({ ...prevData, pagos: response.data }))
+          }
+        } catch (error) {
+          handleErrors(error)
+        }
+      }
+    }
+    fetchData()
+
+  }, [state.cliente])
+
+
+  useEffect(() => {
+    getAllClientes()
+  }, [])
+
+  useEffect(() => {
+    if (!state.pagos) {
+      return
+    }
+    loadHeaders(state.pagos)
+  }, [])
+  
 
   return (
     <>
@@ -134,6 +200,15 @@ export default function PagosPage() {
               ))}
             </select>
           </div>
+          <div className='flex gap-5 items-center'>
+            <label>Buscar Pedido por cliente </label>
+            <select onChange={handleClienteSelectorChange} className='rounded-lg focus:ring-0' name="searchByStatus" >
+              <option className='text-gray-200' value={'getAllByClientes'}> Seleccionar el cliente </option>
+              {state.clientes.map(cliente => (
+                <option value={cliente.id}> {cliente.nombre}</option>
+              ))}
+            </select>
+          </div>
         </div>
         <div>
           <Table
@@ -146,11 +221,11 @@ export default function PagosPage() {
           />
         </div>
       </div>
-      <EditarPago 
-      handleSubmit={handleEditSave} 
-      show={state.editViewVisible} 
-      onClose={() => setState((prevData) => ({ ...prevData, editViewVisible: false }))} 
-      metodosPago={state.metodosPago}
+      <EditarPago
+        handleSubmit={handleEditSave}
+        show={state.editViewVisible}
+        onClose={() => setState((prevData) => ({ ...prevData, editViewVisible: false }))}
+        metodosPago={state.metodosPago}
 
       />
     </>

@@ -62,6 +62,7 @@ export default function PedidosPage() {
   const [enviado, setenviado] = useState()
   const [isPedidosLoaded, setIsPedidosLoaded] = useState(false);
   const [clientes, setClientes] = useState([])
+  const [render, setRender] = useState()
 
   const estadosEnum = [
     'CREADO',
@@ -285,17 +286,52 @@ export default function PedidosPage() {
     try {
       const response = await axios.get('/admin/pedidos/')
       setPedidos(response.data)
-      setenviado(true) 
+      setenviado(true)
     } catch (error) {
       console.error("Error al obtener pedidos:", error)
     }
   }
-  
+
   useEffect(() => {
     if (enviado) {
       handleCantidadChange()
     }
   }, [enviado])
+
+  const handleSearchBetweenDates = (e) => {
+    const startDate = document.querySelector('#startDate').value
+    const endDate = document.querySelector('#endDate').value
+    const pedidosEnRango = pedidos.filter((pedido) => {
+      const fechaPedido = new Date(pedido.fechaPedido)
+      return fechaPedido >= startDate && fechaPedido < endDate
+    })
+    setPedidos(pedidosEnRango)
+
+  }
+
+  useEffect(() => {
+    if (render) {
+      const handleSearchBetweenDates = () => {
+        const startDate = new Date(document.querySelector('#startDate').value);
+        const endDate = new Date(document.querySelector('#endDate').value);
+        const pedidosEnRango = pedidos.filter((pedido) => {
+          const fechaPedido = new Date(pedido.fechaPedido);
+          return fechaPedido >= startDate && fechaPedido < endDate;
+        });
+        setPedidos(pedidosEnRango);
+
+      };
+
+      handleSearchBetweenDates();
+    }
+    setRender(false);
+  }, [render, pedidos]);
+
+
+  const triggerSearch = () => {
+    setRender(true);
+  };
+
 
 
   return (
@@ -326,6 +362,12 @@ export default function PedidosPage() {
         <div className='flex gap-5 items-center'>
           <label>Buscar Clientes con pedidos pendientes </label>
           <button onClick={handleSearchByClienteandPendiente} className='px-7 py-3 rounded-lg bg-blue-500 hover:bg-blue-700 text-white'> Buscar</button>
+        </div>
+        <div className='flex gap-5 items-center'>
+          <label>Buscar pedidos En un rango de fecha </label>
+          <input type="date" id='startDate' />
+          <input type="date" id='endDate' />
+          <button onClick={triggerSearch} className='px-7 py-3 rounded-lg bg-blue-500 hover:bg-blue-700 text-white'> Buscar </button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table

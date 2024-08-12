@@ -20,7 +20,7 @@ const App = () => (
     <div className="App h-screen">
         <AuthProvider>
             <Routes>
-                <Route path='/login' element={<LoginPage />} />
+                <Route path='/' element={<LoginPage />} />
                 <Route path='/landing' element={<Ecommerce />}></Route>
                 <Route path='/register' element={<SignUpPage />} />
                 <Route path='/home' element={<RutaPrivada />}>

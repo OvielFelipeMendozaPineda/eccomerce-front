@@ -80,16 +80,9 @@ export default function PagosPage() {
     const fetchData = async () => {
       console.log(state.metodoPago);
       try {
-        const response = await axios.get(`/admin/pagos/getByformaPago?id=${state.metodoPago}`)
-        if (response.state === 200) {
-          setState((prevData) => ({ ...prevData, pagos: response.data }))
-        } else {
-          Toast.fire({
-            title: 'Error',
-            text: `No se pudo obtener pagos por ${state.metodoPago}`,
-            timer: 2000
-          })
-        }
+        const response = await axios.get(`/admin/formaPagoTercero/getByFormaPagoId?formaPagoId=${state.metodoPago}`)
+        setState((prevData) => ({ ...prevData, pagos: response.data }))
+
       } catch (error) {
         Toast.fire({
           icon: 'error',
@@ -125,7 +118,7 @@ export default function PagosPage() {
   const handleClienteSelectorChange = async (e) => {
     const { value } = e.target
     setState((prevData) => ({ ...prevData, cliente: value }))
-  
+
 
 
   }
@@ -147,17 +140,17 @@ export default function PagosPage() {
     }
     const fetchData = async () => {
       console.log(state.cliente);
-      
-      if (state.cliente == 'getAllByClientes') {      
-          try {
-            const response = await axios.get('/admin/formaPagoTercero/getAll')
-            if (response.status == 200) {
-              setState((prevData) => ({...prevData, pagos: response.data}))
-            }
-          } catch (error) {
-            console.warn(error);
-            
+
+      if (state.cliente == 'getAllByClientes') {
+        try {
+          const response = await axios.get('/admin/formaPagoTercero/getAll')
+          if (response.status == 200) {
+            setState((prevData) => ({ ...prevData, pagos: response.data }))
           }
+        } catch (error) {
+          console.warn(error);
+
+        }
       } else {
         try {
           const response = await axios.get(`/admin/formaPagoTercero/getByTerceroId?terceroId=${state.cliente}`)
@@ -184,7 +177,7 @@ export default function PagosPage() {
     }
     loadHeaders(state.pagos)
   }, [])
-  
+
 
   return (
     <>

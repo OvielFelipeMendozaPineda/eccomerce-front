@@ -46,6 +46,8 @@ export default function EmpleadosPage() {
   const [EditModalVisible, setEditModalVisible] = useState(false)
   const [ViewModalVisible, setViewModalVisible] = useState(false)
   const [ConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false)
+  const [oficinaState, setOficinaState] = useState("Seleccionar Oficina")
+  const [empleadosLoaded, setEmpleadosLoaded] = useState(false)
 
   const loadDynamicHeader = async (data) => {
     if (data.length > 0) {
@@ -79,21 +81,10 @@ export default function EmpleadosPage() {
   }, [])
 
 
-  useEffect(() => {
-    const setHeaders = async () => {
-      await loadDynamicHeader(empleados)
-    }
-    setHeaders()
-  }, [empleados])
 
 
-  useEffect(() => {
-    const fetchNewEmpledosData = async () => {
-      const response = await axios.get('/admin/empleados/getAll')
-      setEmpleados(response.data)
-    }
-    fetchNewEmpledosData()
-  }, [tableUpdate])
+
+
 
   const handleEditClick = (employee) => {
 
@@ -115,7 +106,7 @@ export default function EmpleadosPage() {
   };
 
   const handleDeleteConfirm = async (employee) => {
-    
+
     try {
       const url = `/admin/empleados/borrar?id=${employee.id}`
       const response = await axios.delete(url)
@@ -141,7 +132,6 @@ export default function EmpleadosPage() {
   })
 
   const handleChange = (e) => {
-
     const { name, value } = e.target
     setFormData((prevData) => ({ ...prevData, [name]: value }))
 
@@ -180,7 +170,7 @@ export default function EmpleadosPage() {
 
   const handleEditSave = async (updatedEmployee) => {
     console.log(updatedEmployee);
-    
+
     const url = `/admin/empleados/update/${updatedEmployee.id}`
     const payload = {
       id: updatedEmployee.id,
@@ -190,11 +180,11 @@ export default function EmpleadosPage() {
       telefono: updatedEmployee.telefono,
       rol: updatedEmployee.rol,
       oficinaNombre: updatedEmployee.oficinaNombre,
-      oficina: updatedEmployee.oficina,  
+      oficina: updatedEmployee.oficina,
       jefe: updatedEmployee.jefe
     };
     console.log(payload);
-    
+
     try {
       const response = await axios.put(url, payload)
       if (response.status === 200) {
@@ -213,16 +203,59 @@ export default function EmpleadosPage() {
   };
 
 
+  useEffect(() => {
+    const fetchEmpleadosData = async () => {
+      let empleadosData = []
+      console.log(oficinaState);
+
+      try {
+        if (oficinaState === 'Seleccionar Oficina') {
+
+          empleadosData = await axios.get('/admin/empleados/getAll')
+          console.log(empleadosData, "if");
+        } else {
+          empleadosData = await axios.get(`/admin/empleados/buscarPorOficina?oficina=${oficinaState}`)
+          console.log(empleadosData, "else");
+        }
+        setEmpleados(empleadosData.data)
+        setEmpleadosLoaded(true)
+      } catch (error) {
+        handleErrors(error)
+      }
+    }
+    fetchEmpleadosData()
+  }, [oficinaState])
+
+  useEffect(() => {
+    if (!empleadosLoaded) return;
+
+    if (empleados.length === 0) {
+      setHeaders([]);
+      return;
+    }
+    const dynamicHeaders = Object.keys(empleados[0]).map((key) => ({
+      key,
+      title: key.charAt(0).toUpperCase() + key.slice(1),
+      className: 'text-gray-500'
+    }));
+    setHeaders(dynamicHeaders);
+  }, [empleados, empleadosLoaded]);
+
+  const handleStatusSelectorChange = (e) => {
+    setOficinaState(e.target.value)
+  }
+
   return (
     <>
       <div className='flex flex-col w-full gap-10 h-screen'>
         <div><h2 className='text-2xl'>Gestión de Empleados</h2></div>
         <div className='w-full flex justify-around'>
           <div className='flex items-center gap-5 justify-between'>
-            <label className='text-gray-500 '>Filtrar por oficina:</label>
-            <select className='rounded-lg ring-0 border-none focus:ring-0 '>
+            <label className='text-black-500 '>Filtrar por oficina:</label>
+            <select className='rounded-lg ring-0 focus:ring-0' onChange={handleStatusSelectorChange}>
+              <option value="Seleccionar Oficina">Seleccionar oficina</option>
               {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
-                <option key={oficina.id} value={oficina.id}> {oficina.nombre} </option>
+                <option value={oficina.nombre}> {oficina.nombre} </option>
               ))}
             </select>
           </div>
@@ -316,7 +349,7 @@ function CrearNuevoEmpleado({ show, onClose, roles, oficinas, empleados, handleS
             <div className='flex my-5 justify-between'>
               <label htmlFor=""> Oficina </label>
               <select onChange={handleChange} name="oficina_id" id="oficina">
-                <option value="" > Seleccionar oficna</option>
+                <option value="" > Seleccionar oficina</option>
                 {Array.isArray(oficinas) && oficinas.length > 0 && oficinas.map((oficina) => (
                   <option value={oficina.id}> {oficina.nombre} </option>
                 ))}

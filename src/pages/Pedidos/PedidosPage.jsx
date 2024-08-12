@@ -249,6 +249,7 @@ export default function PedidosPage() {
 
   useEffect(() => {
     if (!isPedidosLoaded) return;
+    console.log("Llega aca");
 
     if (pedidos.length === 0) {
       setHeaders([]);

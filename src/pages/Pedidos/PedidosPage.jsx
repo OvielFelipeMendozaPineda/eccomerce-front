@@ -272,14 +272,32 @@ export default function PedidosPage() {
         setClientes(response.data)
       }
     } catch (error) {
-      
+
     }
   }
 
   useEffect(() => {
     getAllClientes()
   }, [])
+
+
+  const handleSearchByClienteandPendiente = async () => {
+    try {
+      const response = await axios.get('/admin/pedidos/')
+      setPedidos(response.data)
+      setenviado(true) 
+    } catch (error) {
+      console.error("Error al obtener pedidos:", error)
+    }
+  }
   
+  useEffect(() => {
+    if (enviado) {
+      handleCantidadChange()
+    }
+  }, [enviado])
+
+
   return (
     <>
       <div className='flex flex-col w-full gap-5 h-screen'>
@@ -304,6 +322,10 @@ export default function PedidosPage() {
               <option value={cliente.id}> {cliente.nombre}</option>
             ))}
           </select>
+        </div>
+        <div className='flex gap-5 items-center'>
+          <label>Buscar Clientes con pedidos pendientes </label>
+          <button onClick={handleSearchByClienteandPendiente} className='px-7 py-3 rounded-lg bg-blue-500 hover:bg-blue-700 text-white'> Buscar</button>
         </div>
         <div className="table-view bg-gray-200 w-full h-full mt-5">
           <Table
@@ -481,15 +503,15 @@ function PayModal({ show, onClose, pedido }) {
     try {
       const responsePago = await axios.post('/admin/formaPagoTercero/create', payload);
       if (responsePago.status === 200) {
-          pedido.estado = 'PAGADO'
-          const responsePedidoEstado = axios.put(`/admin/pedido/update/${pedido.id}`, pedido)
-          if (responsePedidoEstado == 200) {
-            Toast.fire({
-              icon: 'success',
-              title: 'Pedido pagado exitosamente',
-              timer: 2000
-            })
-          }
+        pedido.estado = 'PAGADO'
+        const responsePedidoEstado = axios.put(`/admin/pedido/update/${pedido.id}`, pedido)
+        if (responsePedidoEstado == 200) {
+          Toast.fire({
+            icon: 'success',
+            title: 'Pedido pagado exitosamente',
+            timer: 2000
+          })
+        }
       }
       onClose();
     } catch (error) {

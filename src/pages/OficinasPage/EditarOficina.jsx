@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import Button from '../../components/common/Button/Button';
 
-const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
+const EditarOficina = ({ show, onClose, confirmEdit, oficina }) => {
   const [formData, setFormData] = useState({
     id: '',
     nombre: '',
@@ -19,13 +18,21 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
 
   useEffect(() => {
     if (oficina) {
-      setFormData((prevData) => ({
-        ...prevData,
-        id: oficina.id,
-      }));
+      setFormData({
+        id: oficina.id || '',
+        nombre: oficina.nombre || '',
+        telefono: oficina.telefono || '',
+        direccion: {
+          tipoCalle: oficina.direccion?.tipoCalle || '',
+          nombreCalle: oficina.direccion?.nombreCalle || '',
+          numeroCalle: oficina.direccion?.numeroCalle || '',
+          numeroComplemento: oficina.direccion?.numeroComplemento || '',
+          codigoPostal: oficina.direccion?.codigoPostal || '',
+          ciudad: oficina.direccion?.ciudad || '',
+        },
+      });
     }
   }, [oficina]);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,11 +51,10 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
   };
 
   const handleSubmit = (e) => {
-    confirmEdit(formData)
     e.preventDefault();
+    confirmEdit(formData);
     onClose();
   };
-
 
   if (!show) return null;
 
@@ -67,11 +73,9 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
             <input
               type="text"
               id="nombre"
-              placeholder={oficina.nombre}
               name="nombre"
               value={formData.nombre}
               onChange={handleChange}
-
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
             />
           </div>
@@ -83,7 +87,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
             <input
               type="text"
               id="telefono"
-              placeholder={oficina.telefono}
               name="telefono"
               value={formData.telefono}
               onChange={handleChange}
@@ -101,7 +104,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="tipoCalle"
-                placeholder={oficina.direccion.tipoCalle}
                 name="direccion.tipoCalle"
                 value={formData.direccion.tipoCalle}
                 onChange={handleChange}
@@ -116,7 +118,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="nombreCalle"
-                placeholder={oficina.direccion.nombreCalle}
                 name="direccion.nombreCalle"
                 value={formData.direccion.nombreCalle}
                 onChange={handleChange}
@@ -131,7 +132,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="numeroCalle"
-                placeholder={oficina.direccion.numeroCalle}
                 name="direccion.numeroCalle"
                 value={formData.direccion.numeroCalle}
                 onChange={handleChange}
@@ -146,7 +146,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="numeroComplemento"
-                placeholder={oficina.direccion.numeroComplemento}
                 name="direccion.numeroComplemento"
                 value={formData.direccion.numeroComplemento}
                 onChange={handleChange}
@@ -161,7 +160,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="codigoPostal"
-                placeholder={oficina.direccion.codigoPostal}
                 name="direccion.codigoPostal"
                 value={formData.direccion.codigoPostal}
                 onChange={handleChange}
@@ -176,7 +174,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
               <input
                 type="text"
                 id="ciudad"
-                placeholder={oficina.direccion.ciudad}
                 name="direccion.ciudad"
                 value={formData.direccion.ciudad}
                 onChange={handleChange}
@@ -187,7 +184,6 @@ const EditarOficina = ({ show, onClose, onSave, oficina, confirmEdit }) => {
 
           <button
             type="submit"
-            onClick={handleSubmit}
             className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Actualizar oficina
